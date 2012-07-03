@@ -1,6 +1,4 @@
-.eunit
-deps
-priv
-*.o
-*.beam
-*.plt
+.eunit/
+deps/
+ebin/
+test/snmp-agent/db
