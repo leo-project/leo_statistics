@@ -103,11 +103,11 @@ init([Id, AppName, Mods]) ->
     lists:foreach(fun(Module) ->
                           catch erlang:apply(Module, init, [])
                   end, Mods),
-    case Id of
-        'snmp_server_s' -> Interval = ?env_snmp_sync_interval_s(AppName);
-        'snmp_server_l' -> Interval = ?env_snmp_sync_interval_l(AppName);
-        'stat_server'   -> Interval = ?env_statistics_sync_interval(AppName)
-    end,
+    Interval = case Id of
+                   'snmp_server_s' -> ?env_snmp_sync_interval_s(AppName);
+                   'snmp_server_l' -> ?env_snmp_sync_interval_l(AppName);
+                   'stat_server'   -> ?env_statistics_sync_interval(AppName)
+               end,
     defer_sync(Id, Interval),
 
     {ok, #state{id       = Id,
