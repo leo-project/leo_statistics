@@ -26,7 +26,7 @@
 -module(leo_statistics_api).
 
 -author('Yosuke Hara').
--vsn('0.9.0').
+-vsn('0.9.1').
 
 -include_lib("eunit/include/eunit.hrl").
 
