@@ -26,7 +26,7 @@
 -module(leo_statistics_metrics_req).
 
 -author('Yosuke Hara').
--vsn('0.9.0').
+-vsn('0.9.1').
 
 -behaviour(leo_statistics_behaviour).
 
