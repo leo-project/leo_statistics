@@ -26,7 +26,6 @@
 -module(leo_statistics).
 
 -author('Yosuke Hara').
--vsn('0.9.1').
 
 %% Application and Supervisor callbacks
 -export([start/0, stop/0]).
