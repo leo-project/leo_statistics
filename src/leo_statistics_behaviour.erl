@@ -26,7 +26,6 @@
 -module(leo_statistics_behaviour).
 
 -author('Yosuke Hara').
--vsn('0.9.1').
 
 -export([behaviour_info/1]).
 
