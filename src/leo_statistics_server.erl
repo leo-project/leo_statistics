@@ -166,7 +166,7 @@ code_change(_OldVsn, State, _Extra) ->
 maybe_sync(#state{id = Id,
                   interval  = Interval,
                   timestamp = Timestamp} = State) ->
-    ThisTime = leo_utils:now() * 1000,
+    ThisTime = leo_date:now() * 1000,
 
     case ((ThisTime - Timestamp) < Interval) of
         true ->
