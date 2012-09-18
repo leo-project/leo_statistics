@@ -117,7 +117,7 @@ get_values(Interval, Property) ->
     Metrics = get_metrics_items(Interval),
     lists:map(fun(Name) ->
                       Values = leo_statistics_api:get_histogram(Name),
-                      {Name, proplists:get_value(Property, Values)}
+                      {Name, leo_misc:get_value(Property, Values)}
               end, Metrics).
 
 
@@ -129,7 +129,7 @@ set_values(Interval, Values) ->
     Metrics = get_metrics_items(Interval),
     snmp_generic:variable_set(?SNMP_NODE_NAME, atom_to_list(erlang:node())),
     lists:foreach(fun(Name) ->
-                          Value = erlang:round(proplists:get_value(Name, Values)),
+                          Value = erlang:round(leo_misc:get_value(Name, Values)),
                           snmp_generic:variable_set(Name, Value)
                   end, Metrics),
     ok.
