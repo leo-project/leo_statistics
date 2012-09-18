@@ -60,7 +60,7 @@ start(Sup, AppName, Options) ->
     application:start(snmp),
     ok = snmpa:load_mibs(snmp_master_agent, [?env_snmp_agent(AppName)]),
 
-    case proplists:get_value('snmp', Options) of
+    case leo_misc:get_value('snmp', Options) of
         Mods0 when is_list(Mods0) ->
             ChildSpec0 = {leo_statistics_server_s,
                           {leo_statistics_server, start_link, ['snmp_server_s', AppName, Mods0]},
@@ -76,7 +76,7 @@ start(Sup, AppName, Options) ->
     end,
 
     %% statistics
-    case proplists:get_value('stat', Options) of
+    case leo_misc:get_value('stat', Options) of
         Mods1 when is_list(Mods1) ->
             ChildSpec2 = {leo_statistics_server,
                           {leo_statistics_server, start_link, ['stat_server', AppName, Mods1]},
@@ -194,7 +194,7 @@ get_histogram(Name, Property) ->
         {error, _Cause} = Error ->
             Error;
         Values ->
-            proplists:get_value(Property, Values)
+            leo_misc:get_value(Property, Values)
     end.
 
 
