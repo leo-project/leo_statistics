@@ -32,7 +32,9 @@
 -include("include/leo_statistics.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
--export([init/0, sync/1]).
+-export([start_link/1]).
+-export([init/0, handle_call/2]).
+
 
 -define(STAT_VM_TOTAL_MEM_1M,  'vm-total-mem-1m').
 -define(STAT_VM_PROCS_MEM_1M,  'vm-procs-mem-1m').
@@ -60,8 +62,17 @@
 
 -type(interval() :: ?STAT_INTERVAL_1M | ?STAT_INTERVAL_5M).
 
+
 %%--------------------------------------------------------------------
 %% API
+%%--------------------------------------------------------------------
+start_link(Interval) ->
+    ok = leo_statistics_api:start_link(?MODULE, Interval),
+    ok.
+
+
+%%--------------------------------------------------------------------
+%% Callbacks
 %%--------------------------------------------------------------------
 %% @doc Initialize metrics.
 %%
@@ -81,15 +92,15 @@ init() ->
 
 %% @doc Synchronize values.
 %%
--spec(sync(interval() | integer()) ->
+-spec(handle_call(sync, interval() | integer()) ->
              ok).
-sync(?STAT_INTERVAL_1M = Interval) ->
+handle_call(sync, ?STAT_INTERVAL_1M = Interval) ->
     ok = set_values(Interval, get_values(Interval, arithmetic_mean));
 
-sync(?STAT_INTERVAL_5M = Interval) ->
+handle_call(sync, ?STAT_INTERVAL_5M = Interval) ->
     ok = set_values(Interval, get_values(Interval, arithmetic_mean));
 
-sync(_Arg) ->
+handle_call(sync, _Arg) ->
     TotalMem = erlang:memory(total),
     ProcMem  = erlang:memory(processes),
     SysMem   = erlang:memory(system),
@@ -109,6 +120,9 @@ sync(_Arg) ->
     ok.
 
 
+%%--------------------------------------------------------------------
+%% Inner Functions
+%%--------------------------------------------------------------------
 %% @doc Retrieve metric-values by property.
 %% @private
 -spec(get_values(interval(), atom()) ->

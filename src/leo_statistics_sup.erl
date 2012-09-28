@@ -31,27 +31,34 @@
 -export([start_link/0]).
 
 %% Supervisor callbacks
--export([init/1]).
+-export([init/1, stop/0]).
 
 -include_lib("eunit/include/eunit.hrl").
 
 start_link() ->
-    Res = supervisor:start_link({local, ?MODULE}, ?MODULE, []),
-    ok = leo_statistics_api:start(?MODULE, 'leo_statistics',
-                                   [{'snmp', [leo_statistics_metrics_vm,
-                                              leo_statistics_metrics_req]},
-                                    {'stat', [leo_statistics_metrics_vm]}]),
+    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
-    Res.
 
+%% @spec () -> ok |
+%%             not_started
+%% @doc stop process.
+%% @end
+stop() ->
+    case whereis(?MODULE) of
+        Pid when is_pid(Pid) == true ->
+            exit(Pid, shutdown),
+            ok;
+        _ -> not_started
+    end.
+
+
+%% ---------------------------------------------------------------------
+%% Callbacks
+%% ---------------------------------------------------------------------
+%% @spec (Params) -> ok
+%% @doc stop process.
+%% @end
+%% @private
 init([]) ->
-    RestartStrategy = one_for_one,
-    MaxRestarts = 1000,
-    MaxSecondsBetweenRestarts = 3600,
-    SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
-
-    %% ChildProc = {leo_statistics_req_counter,
-    %%              {leo_statistics_req_counter, start_link, []},
-    %%              permanent, 2000, worker, [leo_statistics_req_counter]},
-    {ok, {SupFlags, []}}.
+    {ok, {{one_for_one, 5, 60}, []}}.
 

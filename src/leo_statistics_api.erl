@@ -29,7 +29,7 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
--export([start/3,
+-export([start_link/1, start_link/2,
          new_counter/1, inc_counter/2, dec_counter/2, clear_counter/1,
          get/1, notify/2,
          new_histogram/2, get_histogram/1, get_histogram/2,
@@ -49,51 +49,38 @@
 %%--------------------------------------------------------------------
 %% @doc Start SNMP server
 %%
--spec(start(atom(), atom(), list()) ->
+-spec(start_link(atom()) ->
              ok | {error, any()}).
-start(Sup, AppName, Options) ->
-    %% folsom
-    {ok, _} = supervisor:start_child(Sup, {folsom,
-                                           {folsom_sup, start_link, []},
-                                           permanent, 2000, supervisor, [folsom]}),
+start_link(Application) ->
     %% snmp
     application:start(snmp),
-    ok = snmpa:load_mibs(snmp_master_agent, [?env_snmp_agent(AppName)]),
+    ok = snmpa:load_mibs(snmp_master_agent, [?env_snmp_agent(Application)]),
 
-    case leo_misc:get_value('snmp', Options) of
-        Mods0 when is_list(Mods0) ->
-            ChildSpec0 = {leo_statistics_server_s,
-                          {leo_statistics_server, start_link, ['snmp_server_s', AppName, Mods0]},
-                          permanent, 2000, worker, [leo_statistics_server]},
-            ChildSpec1 = {leo_statistics_server_l,
-                          {leo_statistics_server, start_link, ['snmp_server_l', AppName, Mods0]},
-                          permanent, 2000, worker, [leo_statistics_server]},
-
-            {ok, _} = supervisor:start_child(Sup, ChildSpec0),
-            {ok, _} = supervisor:start_child(Sup, ChildSpec1);
-        _Other0 ->
-            void
-    end,
-
-    %% statistics
-    case leo_misc:get_value('stat', Options) of
-        Mods1 when is_list(Mods1) ->
-            ChildSpec2 = {leo_statistics_server,
-                          {leo_statistics_server, start_link, ['stat_server', AppName, Mods1]},
-                          permanent, 2000, worker, [leo_statistics_server]},
-            {ok, _} = supervisor:start_child(Sup, ChildSpec2);
-
-         _Other1 ->
-            void
-    end,
+    %% folsom
+    ChildSpec1 = {folsom,
+                  {folsom_sup, start_link, []},
+                  permanent, 2000, super_visor, [folsom]},
+    {ok, _} = supervisor:start_child(leo_statistics_sup, ChildSpec1),
 
     %% request-counter
-    ChildSpec3 = {leo_statistics_req_counter,
+    ChildSpec2 = {leo_statistics_req_counter,
                   {leo_statistics_req_counter, start_link, []},
                   permanent, 2000, worker, [leo_statistics_req_counter]},
-    {ok, _} = supervisor:start_child(Sup, ChildSpec3),
+    {ok, _} = supervisor:start_child(leo_statistics_sup, ChildSpec2),
     ok.
 
+-spec(start_link(atom(), integer()) ->
+             ok | {error, any()}).
+start_link(Module, Interval) ->
+    PropListOfCounts = supervisor:count_children(leo_statistics_sup),
+    Specs = leo_misc:get_value('specs', PropListOfCounts),
+
+    Id = list_to_atom(lists:append(["statistics_", integer_to_list(Specs)])),
+    ChildSpec = {Id,
+                 {leo_statistics_server, start_link, [Id, Module, Interval]},
+                 permanent, 2000, worker, [leo_statistics_server]},
+    {ok, _} = supervisor:start_child(leo_statistics_sup, ChildSpec),
+    ok.
 
 %%--------------------------------------------------------------------
 %% Counter.

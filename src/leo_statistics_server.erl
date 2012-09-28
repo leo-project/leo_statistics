@@ -43,29 +43,26 @@
          code_change/3
         ]).
 
+%% -define(env_snmp_sync_interval_s(Server),
+%%         case application:get_env(Server, snmp_sync_interval_s) of
+%%             {ok, SyncInterval_S} when is_integer(SyncInterval_S) -> SyncInterval_S;
+%%             _ -> ?DEF_SNMP_SYNC_INTERVAL_S
+%%         end).
 
--define(env_snmp_sync_interval_s(Server),
-        case application:get_env(Server, snmp_sync_interval_s) of
-            {ok, SyncInterval_S} when is_integer(SyncInterval_S) -> SyncInterval_S;
-            _ -> ?DEF_SNMP_SYNC_INTERVAL_S
-        end).
+%% -define(env_snmp_sync_interval_l(Server),
+%%         case application:get_env(Server, snmp_sync_interval_l) of
+%%             {ok, SyncInterval_L} when is_integer(SyncInterval_L) -> SyncInterval_L;
+%%             _ -> ?DEF_SNMP_SYNC_INTERVAL_L
+%%         end).
 
--define(env_snmp_sync_interval_l(Server),
-        case application:get_env(Server, snmp_sync_interval_l) of
-            {ok, SyncInterval_L} when is_integer(SyncInterval_L) -> SyncInterval_L;
-            _ -> ?DEF_SNMP_SYNC_INTERVAL_L
-        end).
-
--define(env_statistics_sync_interval(Server),
-        case application:get_env(Server, statistics_sync_interval) of
-            {ok, SyncInterval} when is_integer(SyncInterval) -> SyncInterval;
-            _ -> ?DEF_STATISTICS_SYNC_INTERVAL
-        end).
-
+%% -define(env_statistics_sync_interval(Server),
+%%         case application:get_env(Server, statistics_sync_interval) of
+%%             {ok, SyncInterval} when is_integer(SyncInterval) -> SyncInterval;
+%%             _ -> ?DEF_STATISTICS_SYNC_INTERVAL
+%%         end).
 
 -record(state, {id            :: atom(),
-                app           :: atom(),
-                modules       :: atom(),
+                module        :: atom(),
                 interval      :: integer(),
                 timestamp = 0 :: integer()}).
 
@@ -75,8 +72,8 @@
 %%--------------------------------------------------------------------
 %% Function: start_link() -> {ok,Pid} | ignore | {error,Error}
 %% Description: Starts the server
-start_link(Id, AppName, Fun) ->
-    gen_server:start_link({local, Id}, ?MODULE, [Id, AppName, Fun], []).
+start_link(Id, Module, Interval) ->
+    gen_server:start_link({local, Id}, ?MODULE, [Id, Module, Interval], []).
 
 stop(Id) ->
     gen_server:call(Id, stop).
@@ -98,20 +95,11 @@ sync(Id, Interval) ->
 %%                         ignore               |
 %%                         {stop, Reason}
 %% Description: Initiates the server
-init([Id, AppName, Mods]) ->
-    lists:foreach(fun(Module) ->
-                          catch erlang:apply(Module, init, [])
-                  end, Mods),
-    Interval = case Id of
-                   'snmp_server_s' -> ?env_snmp_sync_interval_s(AppName);
-                   'snmp_server_l' -> ?env_snmp_sync_interval_l(AppName);
-                   'stat_server'   -> ?env_statistics_sync_interval(AppName)
-               end,
+init([Id, Module, Interval]) ->
     defer_sync(Id, Interval),
 
     {ok, #state{id       = Id,
-                app      = AppName,
-                modules  = Mods,
+                module   = Module,
                 interval = Interval}}.
 
 handle_call(stop, _From, State) ->
@@ -126,12 +114,9 @@ handle_call(_, _From, State) ->
 %%                                      {noreply, State, Timeout} |
 %%                                      {stop, Reason, State}
 %% Description: Handling cast messages
-handle_cast({sync, Interval}, #state{modules = Mods} = State) ->
+handle_cast({sync, Interval}, #state{module = Module} = State) ->
     NewInterval = erlang:round(Interval / 1000),
-
-    lists:foreach(fun(Module) ->
-                          catch erlang:apply(Module, sync, [NewInterval])
-                  end, Mods),
+    catch erlang:apply(Module, sync, [NewInterval]),
 
     NewState = maybe_sync(State),
     {noreply, NewState};
