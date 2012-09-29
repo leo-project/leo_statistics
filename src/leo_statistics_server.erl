@@ -43,24 +43,6 @@
          code_change/3
         ]).
 
-%% -define(env_snmp_sync_interval_s(Server),
-%%         case application:get_env(Server, snmp_sync_interval_s) of
-%%             {ok, SyncInterval_S} when is_integer(SyncInterval_S) -> SyncInterval_S;
-%%             _ -> ?DEF_SNMP_SYNC_INTERVAL_S
-%%         end).
-
-%% -define(env_snmp_sync_interval_l(Server),
-%%         case application:get_env(Server, snmp_sync_interval_l) of
-%%             {ok, SyncInterval_L} when is_integer(SyncInterval_L) -> SyncInterval_L;
-%%             _ -> ?DEF_SNMP_SYNC_INTERVAL_L
-%%         end).
-
-%% -define(env_statistics_sync_interval(Server),
-%%         case application:get_env(Server, statistics_sync_interval) of
-%%             {ok, SyncInterval} when is_integer(SyncInterval) -> SyncInterval;
-%%             _ -> ?DEF_STATISTICS_SYNC_INTERVAL
-%%         end).
-
 -record(state, {id            :: atom(),
                 module        :: atom(),
                 interval      :: integer(),
