@@ -53,6 +53,7 @@
              ok | {error, any()}).
 start_link(Application) ->
     %% snmp
+    application:start(leo_statistics),
     application:start(snmp),
     ok = snmpa:load_mibs(snmp_master_agent, [?env_snmp_agent(Application)]),
 
