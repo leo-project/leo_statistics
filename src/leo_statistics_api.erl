@@ -60,7 +60,7 @@ start_link(Application) ->
     %% folsom
     ChildSpec1 = {folsom,
                   {folsom_sup, start_link, []},
-                  permanent, 2000, super_visor, [folsom]},
+                  permanent, 2000, supervisor, [folsom]},
     {ok, _} = supervisor:start_child(leo_statistics_sup, ChildSpec1),
 
     %% request-counter
