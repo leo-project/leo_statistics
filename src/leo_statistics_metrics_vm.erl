@@ -81,11 +81,11 @@ start_link(Interval) ->
 init() ->
     lists:foreach(fun(Name) ->
                           ok = leo_statistics_api:new_histogram(
-                                 Name, erlang:round((60 * 1000) / ?DEF_STATISTICS_SYNC_INTERVAL))
+                                 Name, erlang:round((60 * 1000) / ?STATISTICS_SYNC_INTERVAL))
                   end, ?STAT_VM_METRICS_1M),
     lists:foreach(fun(Name) ->
                           ok = leo_statistics_api:new_histogram(
-                                 Name, erlang:round((300 * 1000) / ?DEF_STATISTICS_SYNC_INTERVAL))
+                                 Name, erlang:round((300 * 1000) / ?STATISTICS_SYNC_INTERVAL))
                   end, ?STAT_VM_METRICS_5M),
     ok.
 
