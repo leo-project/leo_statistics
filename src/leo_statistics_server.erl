@@ -98,8 +98,7 @@ handle_call(_, _From, State) ->
 %% Description: Handling cast messages
 handle_cast({sync, Interval}, #state{module = Module} = State) ->
     NewInterval = erlang:round(Interval / 1000),
-    catch erlang:apply(Module, sync, [NewInterval]),
-
+    catch erlang:apply(Module, handle_call, [{sync, NewInterval}]),
     NewState = maybe_sync(State),
     {noreply, NewState};
 
