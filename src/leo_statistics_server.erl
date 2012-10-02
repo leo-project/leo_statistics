@@ -78,6 +78,7 @@ sync(Id, Interval) ->
 %%                         {stop, Reason}
 %% Description: Initiates the server
 init([Id, Module, Interval]) ->
+    catch erlang:apply(Module, init, []),
     defer_sync(Id, Interval),
 
     {ok, #state{id       = Id,
@@ -99,6 +100,7 @@ handle_call(_, _From, State) ->
 handle_cast({sync, Interval}, #state{module = Module} = State) ->
     NewInterval = erlang:round(Interval / 1000),
     catch erlang:apply(Module, handle_call, [{sync, NewInterval}]),
+
     NewState = maybe_sync(State),
     {noreply, NewState};
 
