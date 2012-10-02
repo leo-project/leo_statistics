@@ -33,7 +33,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([start_link/1]).
--export([init/0, handle_call/2]).
+-export([init/0, handle_call/1]).
 
 
 -define(STAT_HIS_GET,  'his_get').
@@ -77,12 +77,12 @@ init() ->
 
 %% @doc Synchronize values.
 %%
--spec(handle_call(sync, ?STAT_INTERVAL_1M | ?STAT_INTERVAL_5M) ->
+-spec(handle_call({sync, ?STAT_INTERVAL_1M | ?STAT_INTERVAL_5M}) ->
              ok).
-handle_call(sync, ?STAT_INTERVAL_1M) ->
+handle_call({sync, ?STAT_INTERVAL_1M}) ->
     Values = get_values(),
 
-    handle_call(sync, ?STAT_INTERVAL_1M, Values), %% for 1min
+    sync(?STAT_INTERVAL_1M, Values), %% for 1min
     leo_statistics_api:notify(?STAT_HIS_PUT,  leo_misc:get_value(?STAT_REQ_PUT,  Values)),
     leo_statistics_api:notify(?STAT_HIS_GET,  leo_misc:get_value(?STAT_REQ_GET,  Values)),
     leo_statistics_api:notify(?STAT_HIS_DEL,  leo_misc:get_value(?STAT_REQ_DEL,  Values)),
@@ -94,7 +94,8 @@ handle_call(sync, ?STAT_INTERVAL_1M) ->
     Len = round(?STAT_INTERVAL_5M / ?STAT_INTERVAL_1M),
     case leo_statistics_api:get_history(?STAT_HIS_PUT, Len) of
         Histories when length(Histories) >= Len ->
-            handle_call(sync, ?STAT_INTERVAL_5M, [{?STAT_REQ_PUT,  leo_statistics_api:sum(?STAT_HIS_PUT,  Len)},
+            %% for 5min
+            sync(?STAT_INTERVAL_5M, [{?STAT_REQ_PUT,  leo_statistics_api:sum(?STAT_HIS_PUT,  Len)},
                                      {?STAT_REQ_GET,  leo_statistics_api:sum(?STAT_HIS_GET,  Len)},
                                      {?STAT_REQ_DEL,  leo_statistics_api:sum(?STAT_HIS_DEL,  Len)}
                                     ]),
@@ -106,18 +107,23 @@ handle_call(sync, ?STAT_INTERVAL_1M) ->
     end,
     ok;
 
-handle_call(sync, ?STAT_INTERVAL_5M) ->
+handle_call({sync, ?STAT_INTERVAL_5M}) ->
     ok.
 
 
-handle_call(sync, ?STAT_INTERVAL_1M, Values) ->
+%%--------------------------------------------------------------------
+%% Internal Function
+%%--------------------------------------------------------------------
+%% @doc Synchronize
+%% @private
+sync(?STAT_INTERVAL_1M, Values) ->
     snmp_generic:variable_set(?SNMP_NODE_NAME,      atom_to_list(node())),
     snmp_generic:variable_set(?SNMP_REQ_WRITES_1M,  leo_misc:get_value(?STAT_REQ_PUT,  Values)),
     snmp_generic:variable_set(?SNMP_REQ_READS_1M,   leo_misc:get_value(?STAT_REQ_GET,  Values)),
     snmp_generic:variable_set(?SNMP_REQ_DELETES_1M, leo_misc:get_value(?STAT_REQ_DEL,  Values)),
     ok;
 
-handle_call(sync, ?STAT_INTERVAL_5M, Values) ->
+sync(?STAT_INTERVAL_5M, Values) ->
     snmp_generic:variable_set(?SNMP_NODE_NAME,      atom_to_list(node())),
     snmp_generic:variable_set(?SNMP_REQ_WRITES_5M,  leo_misc:get_value(?STAT_REQ_PUT,  Values)),
     snmp_generic:variable_set(?SNMP_REQ_READS_5M,   leo_misc:get_value(?STAT_REQ_GET,  Values)),
@@ -125,9 +131,6 @@ handle_call(sync, ?STAT_INTERVAL_5M, Values) ->
     ok.
 
 
-%%--------------------------------------------------------------------
-%% Internal Function
-%%--------------------------------------------------------------------
 %% @doc Retrieve metric-values.
 %% @private
 -spec(get_values() ->

@@ -33,7 +33,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([start_link/1]).
--export([init/0, handle_call/2]).
+-export([init/0, handle_call/1]).
 
 
 -define(STAT_VM_TOTAL_MEM_1M,  'vm-total-mem-1m').
@@ -92,15 +92,15 @@ init() ->
 
 %% @doc Synchronize values.
 %%
--spec(handle_call(sync, interval() | integer()) ->
+-spec(handle_call({sync, interval() | integer()}) ->
              ok).
-handle_call(sync, ?STAT_INTERVAL_1M = Interval) ->
+handle_call({sync, ?STAT_INTERVAL_1M = Interval}) ->
     ok = set_values(Interval, get_values(Interval, arithmetic_mean));
 
-handle_call(sync, ?STAT_INTERVAL_5M = Interval) ->
+handle_call({sync, ?STAT_INTERVAL_5M = Interval}) ->
     ok = set_values(Interval, get_values(Interval, arithmetic_mean));
 
-handle_call(sync, _Arg) ->
+handle_call({sync, _Arg}) ->
     TotalMem = erlang:memory(total),
     ProcMem  = erlang:memory(processes),
     SysMem   = erlang:memory(system),
