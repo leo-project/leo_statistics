@@ -34,8 +34,8 @@ behaviour_info(callbacks) ->
      %% init() -> ok.
      {init, 0},
 
-     %% sync(integer()) -> ok.
-     {sync, 1}
+     %% hande_call({sync, integer()}) -> ok.
+     {handle_call, 1}
     ];
 behaviour_info(_Other) ->
     undefined.

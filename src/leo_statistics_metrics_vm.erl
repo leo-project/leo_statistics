@@ -32,7 +32,9 @@
 -include("include/leo_statistics.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
--export([init/0, sync/1]).
+-export([start_link/1]).
+-export([init/0, handle_call/1]).
+
 
 -define(STAT_VM_TOTAL_MEM_1M,  'vm-total-mem-1m').
 -define(STAT_VM_PROCS_MEM_1M,  'vm-procs-mem-1m').
@@ -60,8 +62,17 @@
 
 -type(interval() :: ?STAT_INTERVAL_1M | ?STAT_INTERVAL_5M).
 
+
 %%--------------------------------------------------------------------
 %% API
+%%--------------------------------------------------------------------
+start_link(Interval) ->
+    ok = leo_statistics_api:start_link(?MODULE, Interval),
+    ok.
+
+
+%%--------------------------------------------------------------------
+%% Callbacks
 %%--------------------------------------------------------------------
 %% @doc Initialize metrics.
 %%
@@ -70,26 +81,26 @@
 init() ->
     lists:foreach(fun(Name) ->
                           ok = leo_statistics_api:new_histogram(
-                                 Name, erlang:round((60 * 1000) / ?DEF_STATISTICS_SYNC_INTERVAL))
+                                 Name, erlang:round((60 * 1000) / ?STATISTICS_SYNC_INTERVAL))
                   end, ?STAT_VM_METRICS_1M),
     lists:foreach(fun(Name) ->
                           ok = leo_statistics_api:new_histogram(
-                                 Name, erlang:round((300 * 1000) / ?DEF_STATISTICS_SYNC_INTERVAL))
+                                 Name, erlang:round((300 * 1000) / ?STATISTICS_SYNC_INTERVAL))
                   end, ?STAT_VM_METRICS_5M),
     ok.
 
 
 %% @doc Synchronize values.
 %%
--spec(sync(interval() | integer()) ->
+-spec(handle_call({sync, interval() | integer()}) ->
              ok).
-sync(?STAT_INTERVAL_1M = Interval) ->
+handle_call({sync, ?STAT_INTERVAL_1M = Interval}) ->
     ok = set_values(Interval, get_values(Interval, arithmetic_mean));
 
-sync(?STAT_INTERVAL_5M = Interval) ->
+handle_call({sync, ?STAT_INTERVAL_5M = Interval}) ->
     ok = set_values(Interval, get_values(Interval, arithmetic_mean));
 
-sync(_Arg) ->
+handle_call({sync, _Arg}) ->
     TotalMem = erlang:memory(total),
     ProcMem  = erlang:memory(processes),
     SysMem   = erlang:memory(system),
@@ -109,12 +120,16 @@ sync(_Arg) ->
     ok.
 
 
+%%--------------------------------------------------------------------
+%% Inner Functions
+%%--------------------------------------------------------------------
 %% @doc Retrieve metric-values by property.
 %% @private
 -spec(get_values(interval(), atom()) ->
              list()).
 get_values(Interval, Property) ->
     Metrics = get_metrics_items(Interval),
+
     lists:map(fun(Name) ->
                       Values = leo_statistics_api:get_histogram(Name),
                       {Name, leo_misc:get_value(Property, Values)}
@@ -127,10 +142,10 @@ get_values(Interval, Property) ->
              ok).
 set_values(Interval, Values) ->
     Metrics = get_metrics_items(Interval),
-    snmp_generic:variable_set(?SNMP_NODE_NAME, atom_to_list(erlang:node())),
+    _ = snmp_generic:variable_set(?SNMP_NODE_NAME, atom_to_list(erlang:node())),
     lists:foreach(fun(Name) ->
                           Value = erlang:round(leo_misc:get_value(Name, Values)),
-                          snmp_generic:variable_set(Name, Value)
+                          _ = snmp_generic:variable_set(Name, Value)
                   end, Metrics),
     ok.
 

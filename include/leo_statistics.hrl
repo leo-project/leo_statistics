@@ -29,13 +29,13 @@
 -define(STAT_INTERVAL_5M, 300).
 
 -ifdef(TEST).
--define(DEF_SNMP_SYNC_INTERVAL_S,     1000). %% 1 sec
--define(DEF_SNMP_SYNC_INTERVAL_L,     3000). %% 3 sec
--define(DEF_STATISTICS_SYNC_INTERVAL, 1000). %% 1 sec
+-define(SNMP_SYNC_INTERVAL_S,     1000). %% 1 sec
+-define(SNMP_SYNC_INTERVAL_L,     3000). %% 3 sec
+-define(STATISTICS_SYNC_INTERVAL, 1000). %% 1 sec
 -else.
--define(DEF_SNMP_SYNC_INTERVAL_S,     ?STAT_INTERVAL_1M * 1000). %%  60 sec %% short
--define(DEF_SNMP_SYNC_INTERVAL_L,     ?STAT_INTERVAL_5M * 1000). %% 300 sec %% long
--define(DEF_STATISTICS_SYNC_INTERVAL, 10000). %%  10 sec
+-define(SNMP_SYNC_INTERVAL_S,     ?STAT_INTERVAL_1M * 1000). %%  60 sec %% short
+-define(SNMP_SYNC_INTERVAL_L,     ?STAT_INTERVAL_5M * 1000). %% 300 sec %% long
+-define(STATISTICS_SYNC_INTERVAL, 10000). %%  10 sec
 -endif.
 
 -define(SNMP_NODE_NAME, 'node-name').
