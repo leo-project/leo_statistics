@@ -76,7 +76,7 @@ start_link(Module, Interval) ->
     PropListOfCounts = supervisor:count_children(leo_statistics_sup),
     Specs = leo_misc:get_value('specs', PropListOfCounts),
 
-    Id = list_to_atom(lists:append(["statistics_", integer_to_list(Specs)])),
+    Id = list_to_atom(lists:append(["leo_statistics_", integer_to_list(Specs)])),
     ChildSpec = {Id,
                  {leo_statistics_server, start_link, [Id, Module, Interval]},
                  permanent, 2000, worker, [leo_statistics_server]},
