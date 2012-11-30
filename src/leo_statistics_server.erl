@@ -43,6 +43,8 @@
          code_change/3
         ]).
 
+-define(DEF_TIMEOUT, 30000).
+
 -record(state, {id            :: atom(),
                 module        :: atom(),
                 interval      :: integer(),
@@ -58,7 +60,7 @@ start_link(Id, Module, Interval) ->
     gen_server:start_link({local, Id}, ?MODULE, [Id, Module, Interval], []).
 
 stop(Id) ->
-    gen_server:call(Id, stop).
+    gen_server:call(Id, stop, ?DEF_TIMEOUT).
 
 
 %% @doc Synchronize a value.
