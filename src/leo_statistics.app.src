@@ -22,7 +22,7 @@
 {application, leo_statistics,
   [
     {description, "LEO STATISTICS"},
-    {vsn, "0.10.7"},
+    {vsn, "0.10.8"},
     {id, "leo_statistics"},
     {registered,   []},
     {applications, [kernel, stdlib]},
