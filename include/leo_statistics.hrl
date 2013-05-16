@@ -42,3 +42,10 @@
 -define(STAT_REQ_GET,   'req_get').
 -define(STAT_REQ_PUT,   'req_put').
 -define(STAT_REQ_DEL,   'req_del').
+
+
+%% @doc SNMPA Value
+-record(snmpa_value, {oid = []  :: list(),
+                      type = [] :: string(),
+                      value     :: any()
+                     }).

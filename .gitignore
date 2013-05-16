@@ -2,3 +2,5 @@
 deps/
 ebin/
 test/snmp-agent/db
+snmpm_config_db
+manager.conf
