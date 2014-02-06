@@ -36,12 +36,10 @@
          new_history/1, get_history/2, sum/2, clear_history/1
         ]).
 
-
--define(DEF_SNMP_AGENT, "test/snmp-agent/ARIA-MIB").
 -define(env_snmp_agent(Server),
         case application:get_env(Server, snmp_agent) of
-            {ok, SNMPAgent} -> SNMPAgent;
-            _ -> ?DEF_SNMP_AGENT
+            {ok, _SNMPAgent} -> _SNMPAgent;
+            _ -> []
         end).
 
 %%--------------------------------------------------------------------
@@ -52,23 +50,31 @@
 -spec(start_link(atom()) ->
              ok | {error, any()}).
 start_link(Application) ->
-    %% snmp
-    application:start(leo_statistics),
-    application:start(snmp),
-    ok = snmpa:load_mibs(snmp_master_agent, [?env_snmp_agent(Application)]),
+    case ?env_snmp_agent(Application) of
+        [] ->
+            ok;
+        SNMPAgent ->
+            application:start(leo_statistics),
+            application:start(snmp),
 
-    %% folsom
-    ChildSpec1 = {folsom,
-                  {folsom_sup, start_link, []},
-                  permanent, 2000, supervisor, [folsom]},
-    {ok, _} = supervisor:start_child(leo_statistics_sup, ChildSpec1),
+            case catch snmpa:load_mibs(snmp_master_agent, [SNMPAgent]) of
+                ok ->
+                    %% folsom
+                    ChildSpec1 = {folsom,
+                                  {folsom_sup, start_link, []},
+                                  permanent, 2000, supervisor, [folsom]},
+                    {ok, _} = supervisor:start_child(leo_statistics_sup, ChildSpec1),
 
-    %% request-counter
-    ChildSpec2 = {leo_statistics_req_counter,
-                  {leo_statistics_req_counter, start_link, []},
-                  permanent, 2000, worker, [leo_statistics_req_counter]},
-    {ok, _} = supervisor:start_child(leo_statistics_sup, ChildSpec2),
-    ok.
+                    %% request-counter
+                    ChildSpec2 = {leo_statistics_req_counter,
+                                  {leo_statistics_req_counter, start_link, []},
+                                  permanent, 2000, worker, [leo_statistics_req_counter]},
+                    {ok, _} = supervisor:start_child(leo_statistics_sup, ChildSpec2),
+                    ok;
+                Error ->
+                    Error
+            end
+    end.
 
 -spec(start_link(atom(), integer()) ->
              ok | {error, any()}).
@@ -239,4 +245,3 @@ sum(Name, Count) ->
 clear_history(Name) ->
     catch folsom_metrics:delete_metric(Name),
     new_history(Name).
-
