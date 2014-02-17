@@ -44,52 +44,58 @@
 %% API
 %%--------------------------------------------------------------------
 start_link(Window) ->
-    ok = leo_statistics_sup:start_child(?MODULE, Window),
+    case catch mnesia:table_info('sv_schemas', all) of
+        {'EXIT', _Cause} ->
+            timer:apply_after(500, ?MODULE, start_link, [Window]),
+            ok;
+        _ ->
+            ok = leo_statistics_sup:start_child(?MODULE, Window),
 
-    %% create a schema
-    _NumOfSamples = 3000,
-    ok = savanna_commons:create_schema(
-           ?SCHEMA_NAME, [
-                          %% @TODO - histogram
-                          %% #sv_column{name = ?STAT_HISTO_GET,
-                          %%            type = ?COL_TYPE_H_UNIFORM,
-                          %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                          %% #sv_column{name = ?STAT_HISTO_PUT,
-                          %%            type = ?COL_TYPE_H_UNIFORM,
-                          %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                          %% #sv_column{name = ?STAT_HISTO_DEL,
-                          %%            type = ?COL_TYPE_H_UNIFORM,
-                          %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+            %% create a schema
+            _NumOfSamples = 3000,
+            ok = savanna_commons:create_schema(
+                   ?SCHEMA_NAME, [
+                                  %% @TODO - histogram
+                                  %% #sv_column{name = ?STAT_HISTO_GET,
+                                  %%            type = ?COL_TYPE_H_UNIFORM,
+                                  %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                                  %% #sv_column{name = ?STAT_HISTO_PUT,
+                                  %%            type = ?COL_TYPE_H_UNIFORM,
+                                  %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                                  %% #sv_column{name = ?STAT_HISTO_DEL,
+                                  %%            type = ?COL_TYPE_H_UNIFORM,
+                                  %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
 
-                          %% counter-1: # of request
-                          #sv_column{name = ?STAT_COUNT_GET,
-                                     type = ?COL_TYPE_COUNTER,
-                                     constraint = []},
-                          #sv_column{name = ?STAT_COUNT_PUT,
-                                     type = ?COL_TYPE_COUNTER,
-                                     constraint = []},
-                          #sv_column{name = ?STAT_COUNT_DEL,
-                                     type = ?COL_TYPE_COUNTER,
-                                     constraint = []},
+                                  %% counter-1: # of request
+                                  #sv_column{name = ?STAT_COUNT_GET,
+                                             type = ?COL_TYPE_COUNTER,
+                                             constraint = []},
+                                  #sv_column{name = ?STAT_COUNT_PUT,
+                                             type = ?COL_TYPE_COUNTER,
+                                             constraint = []},
+                                  #sv_column{name = ?STAT_COUNT_DEL,
+                                             type = ?COL_TYPE_COUNTER,
+                                             constraint = []},
 
-                          %% counter-1: summary of file-size
-                          #sv_column{name = ?STAT_SIZE_GET,
-                                     type = ?COL_TYPE_COUNTER,
-                                     constraint = []},
-                          #sv_column{name = ?STAT_SIZE_PUT,
-                                     type = ?COL_TYPE_COUNTER,
-                                     constraint = []},
-                          #sv_column{name = ?STAT_SIZE_DEL,
-                                     type = ?COL_TYPE_COUNTER,
-                                     constraint = []}
-                         ]),
+                                  %% counter-1: summary of file-size
+                                  #sv_column{name = ?STAT_SIZE_GET,
+                                             type = ?COL_TYPE_COUNTER,
+                                             constraint = []},
+                                  #sv_column{name = ?STAT_SIZE_PUT,
+                                             type = ?COL_TYPE_COUNTER,
+                                             constraint = []},
+                                  #sv_column{name = ?STAT_SIZE_DEL,
+                                             type = ?COL_TYPE_COUNTER,
+                                             constraint = []}
+                                 ]),
 
-    %% generate metrics from the schema
-    ok = savanna_commons:create_metrics_by_schema(?SCHEMA_NAME, ?METRIC_GRP_REQ_1MIN,
-                                                  timer:seconds(60),  ?NOTIFIER),
-    ok = savanna_commons:create_metrics_by_schema(?SCHEMA_NAME, ?METRIC_GRP_REQ_5MIN,
-                                                  timer:seconds(300), ?NOTIFIER),
-    ok.
+            %% generate metrics from the schema
+            ok = savanna_commons:create_metrics_by_schema(?SCHEMA_NAME, ?METRIC_GRP_REQ_1MIN,
+                                                          timer:seconds(60),  ?NOTIFIER),
+            ok = savanna_commons:create_metrics_by_schema(?SCHEMA_NAME, ?METRIC_GRP_REQ_5MIN,
+                                                          timer:seconds(300), ?NOTIFIER),
+            ok
+    end.
 
 
 %% @doc Put a value into the savanna from an application

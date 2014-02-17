@@ -48,35 +48,41 @@
 %% API
 %%--------------------------------------------------------------------
 start_link(Window) ->
-    ok = leo_statistics_sup:start_child(?MODULE, Window),
+    case catch mnesia:table_info('sv_schemas', all) of
+        {'EXIT', _Cause} ->
+            timer:apply_after(500, ?MODULE, start_link, [Window]),
+            ok;
+        _ ->
+            ok = leo_statistics_sup:start_child(?MODULE, Window),
 
-    %% create a schema
-    NumOfSamples = 3000,
-    ok = savanna_commons:create_schema(
-           ?SCHEMA_NAME, [
-                          #sv_column{name = ?STAT_VM_TOTAL_MEM,
-                                     type = ?COL_TYPE_H_UNIFORM,
-                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                          #sv_column{name = ?STAT_VM_PROCS_MEM,
-                                     type = ?COL_TYPE_H_UNIFORM,
-                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                          #sv_column{name = ?STAT_VM_SYSTEM_MEM,
-                                     type = ?COL_TYPE_H_UNIFORM,
-                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                          #sv_column{name = ?STAT_VM_ETS_MEM,
-                                     type = ?COL_TYPE_H_UNIFORM,
-                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                          #sv_column{name = ?STAT_VM_PROC_COUNT,
-                                     type = ?COL_TYPE_H_UNIFORM,
-                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
-                         ]),
+            %% create a schema
+            NumOfSamples = 3000,
+            ok = savanna_commons:create_schema(
+                   ?SCHEMA_NAME, [
+                                  #sv_column{name = ?STAT_VM_TOTAL_MEM,
+                                             type = ?COL_TYPE_H_UNIFORM,
+                                             constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                                  #sv_column{name = ?STAT_VM_PROCS_MEM,
+                                             type = ?COL_TYPE_H_UNIFORM,
+                                             constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                                  #sv_column{name = ?STAT_VM_SYSTEM_MEM,
+                                             type = ?COL_TYPE_H_UNIFORM,
+                                             constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                                  #sv_column{name = ?STAT_VM_ETS_MEM,
+                                             type = ?COL_TYPE_H_UNIFORM,
+                                             constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                                  #sv_column{name = ?STAT_VM_PROC_COUNT,
+                                             type = ?COL_TYPE_H_UNIFORM,
+                                             constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
+                                 ]),
 
-    %% generate metrics from the schema
-    ok = savanna_commons:create_metrics_by_schema(?SCHEMA_NAME, ?METRIC_GRP_VM_1MIN,
-                                                  timer:seconds(60),  ?NOTIFIER),
-    ok = savanna_commons:create_metrics_by_schema(?SCHEMA_NAME, ?METRIC_GRP_VM_5MIN,
-                                                  timer:seconds(300), ?NOTIFIER),
-    ok.
+            %% generate metrics from the schema
+            ok = savanna_commons:create_metrics_by_schema(?SCHEMA_NAME, ?METRIC_GRP_VM_1MIN,
+                                                          timer:seconds(60),  ?NOTIFIER),
+            ok = savanna_commons:create_metrics_by_schema(?SCHEMA_NAME, ?METRIC_GRP_VM_5MIN,
+                                                          timer:seconds(300), ?NOTIFIER),
+            ok
+    end.
 
 
 %%--------------------------------------------------------------------
