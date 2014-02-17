@@ -28,7 +28,9 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
--export([start_link/1]).
+-export([start_link/1,
+         create_tables/2
+        ]).
 
 -define(env_snmp_agent(Server),
         case application:get_env(Server, snmp_agent) of
@@ -58,3 +60,13 @@ start_link(Application) ->
                     Error
             end
     end.
+
+%% @doc Create stat's tables
+%%
+-spec(create_tables(disc_copies|ram_copies, list(atom())) ->
+             ok).
+create_tables(MnesiaDiscType, Nodes) ->
+    {atomic,ok} = svc_tbl_schema:create_table(MnesiaDiscType, Nodes),
+    {atomic,ok} = svc_tbl_column:create_table(MnesiaDiscType, Nodes),
+    {atomic,ok} = svc_tbl_metric_group:create_table(MnesiaDiscType, Nodes),
+    ok.

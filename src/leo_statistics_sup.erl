@@ -28,7 +28,8 @@
 -behaviour(supervisor).
 
 %% API
--export([start_link/0, stop/0,
+-export([start_link/0,
+         stop/0,
          start_child/2
         ]).
 
@@ -78,9 +79,6 @@ start_child(Module, Window) ->
 %% @end
 %% @private
 init([]) ->
-    {atomic,ok} = svc_tbl_schema:create_table(ram_copies, [node()]),
-    {atomic,ok} = svc_tbl_column:create_table(ram_copies, [node()]),
-    {atomic,ok} = svc_tbl_metric_group:create_table(ram_copies, [node()]),
     Children = [
                 {folsom,
                  {folsom_sup, start_link, []},
@@ -94,4 +92,3 @@ init([]) ->
                  [savanna_commons_sup]}
                ],
     {ok, {{one_for_one, 5, 60}, Children}}.
-
