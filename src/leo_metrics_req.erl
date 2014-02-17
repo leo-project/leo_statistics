@@ -30,7 +30,7 @@
 
 %% api
 -export([start_link/1,
-         notify/1
+         notify/1, notify/2
         ]).
 
 %% callback

@@ -66,7 +66,7 @@ start_child(Module, Window) ->
     ChildSpec = {Id,
                  {leo_statistics_sampler, start_link, [Module, Window]},
                  permanent, 2000, worker, [leo_statistics_sampler]},
-    {ok, _} = supervisor:start_child(leo_statistics_sup, ChildSpec),
+    {ok, _Pid} = supervisor:start_child(leo_statistics_sup, ChildSpec),
     ok.
 
 
@@ -80,7 +80,12 @@ start_child(Module, Window) ->
 init([]) ->
     {atomic,ok} = svc_tbl_schema:create_table(ram_copies, [node()]),
     {atomic,ok} = svc_tbl_column:create_table(ram_copies, [node()]),
+    {atomic,ok} = svc_tbl_metric_group:create_table(ram_copies, [node()]),
     Children = [
+                {folsom,
+                 {folsom_sup, start_link, []},
+                 permanent, 2000, supervisor, [folsom]},
+
                 {savanna_commons_sup,
                  {savanna_commons_sup, start_link, []},
                  permanent,

@@ -53,11 +53,6 @@ start_link(Application) ->
 
             case catch snmpa:load_mibs(snmp_master_agent, [SNMPAgent]) of
                 ok ->
-                    %% folsom
-                    ChildSpec1 = {folsom,
-                                  {folsom_sup, start_link, []},
-                                  permanent, 2000, supervisor, [folsom]},
-                    {ok, _} = supervisor:start_child(leo_statistics_sup, ChildSpec1),
                     ok;
                 Error ->
                     Error

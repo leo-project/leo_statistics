@@ -63,29 +63,23 @@ notify(?METRIC_GRP_VM_1MIN = MetricGroup, {?STAT_VM_PROC_COUNT = Key, Stats}) ->
 notify(?METRIC_GRP_VM_5MIN = MetricGroup, {?STAT_VM_TOTAL_MEM = Key, Stats}) ->
     io:format("metric-group:~w, key:~w, values:~p",
               [MetricGroup, Key, Stats]),
-    snmp_generic:variable_set(?SNMP_VM_TOTAL_MEM_5M, Stats),
-    ok;
+    set_variable(?SNMP_VM_TOTAL_MEM_5M, Stats);
 notify(?METRIC_GRP_VM_5MIN = MetricGroup, {?STAT_VM_PROCS_MEM = Key, Stats}) ->
     io:format("metric-group:~w, key:~w, values:~p",
               [MetricGroup, Key, Stats]),
-    snmp_generic:variable_set(?SNMP_VM_PROCS_MEM_5M, Stats),
-    ok;
+    set_variable(?SNMP_VM_PROCS_MEM_5M, Stats);
 notify(?METRIC_GRP_VM_5MIN = MetricGroup, {?STAT_VM_SYSTEM_MEM = Key, Stats}) ->
     io:format("metric-group:~w, key:~w, values:~p",
               [MetricGroup, Key, Stats]),
-    snmp_generic:variable_set(?SNMP_VM_SYSTEM_MEM_5M, Stats),
-    ok;
+    set_variable(?SNMP_VM_SYSTEM_MEM_5M, Stats);
 notify(?METRIC_GRP_VM_5MIN = MetricGroup, {?STAT_VM_ETS_MEM = Key, Stats}) ->
     io:format("metric-group:~w, key:~w, values:~p",
               [MetricGroup, Key, Stats]),
-    snmp_generic:variable_set(?SNMP_VM_ETS_MEM_5M, Stats),
-    ok;
+    set_variable(?SNMP_VM_ETS_MEM_5M, Stats);
 notify(?METRIC_GRP_VM_5MIN = MetricGroup, {?STAT_VM_PROC_COUNT = Key, Stats}) ->
     io:format("metric-group:~w, key:~w, values:~p",
               [MetricGroup, Key, Stats]),
-    snmp_generic:variable_set(?SNMP_VM_PROC_COUNT_5M, Stats),
-    ok;
-
+    set_variable(?SNMP_VM_PROC_COUNT_5M, Stats);
 notify(_,_) ->
     ok.
 
