@@ -36,6 +36,7 @@
 %%----------------------------------------------------------------------
 start(_Type, _Args) ->
     consider_profiling(),
+    mnesia:start(),    
     leo_statistics_sup:start_link().
 
 stop(_State) ->

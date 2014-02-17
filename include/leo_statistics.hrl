@@ -32,16 +32,96 @@
 -define(SNMP_SYNC_INTERVAL_S,     1000). %% 1 sec
 -define(SNMP_SYNC_INTERVAL_L,     3000). %% 3 sec
 -define(STATISTICS_SYNC_INTERVAL, 1000). %% 1 sec
+-define(DEF_SMPLING_TIMEOUT,       500). %% 500ms
 -else.
 -define(SNMP_SYNC_INTERVAL_S,     ?STAT_INTERVAL_1M * 1000). %%  60 sec %% short
 -define(SNMP_SYNC_INTERVAL_L,     ?STAT_INTERVAL_5M * 1000). %% 300 sec %% long
 -define(STATISTICS_SYNC_INTERVAL, 10000). %%  10 sec
+-define(DEF_SMPLING_TIMEOUT,      timer:seconds(10)). %% 10sec
 -endif.
 
 -define(SNMP_NODE_NAME, 'node-name').
--define(STAT_REQ_GET,   'req_get').
--define(STAT_REQ_PUT,   'req_put').
--define(STAT_REQ_DEL,   'req_del').
+
+%% request metrics
+-define(METRIC_GRP_REQ_1MIN, 'access_stats_1m').
+-define(METRIC_GRP_REQ_5MIN, 'access_stats_5m').
+
+-define(STAT_COUNT_GET,  'req_count_get').
+-define(STAT_COUNT_PUT,  'req_count_put').
+-define(STAT_COUNT_DEL,  'req_count_del').
+
+-define(STAT_HISTO_GET,  'req_histo_get').
+-define(STAT_HISTO_PUT,  'req_histo_put').
+-define(STAT_HISTO_DEL,  'req_histo_del').
+
+-define(STAT_SIZE_GET,  'req_size_get').
+-define(STAT_SIZE_PUT,  'req_size_put').
+-define(STAT_SIZE_DEL,  'req_size_del').
+
+-define(SNMP_COUNT_WRITES_1M,  'req-writes-1m').
+-define(SNMP_COUNT_READS_1M,   'req-reads-1m').
+-define(SNMP_COUNT_DELETES_1M, 'req-deletes-1m').
+
+-define(SNMP_SIZE_WRITES_1M,  'size-writes-1m').
+-define(SNMP_SIZE_READS_1M,   'size-reads-1m').
+-define(SNMP_SIZE_DELETES_1M, 'size-deletes-1m').
+
+%% -define(SNMP_MAX_SIZE_WRITES_1M,   'max-size-writes-1m').
+%% -define(SNMP_MAX_SIZE_READS_1M,    'max-size-reads-1m').
+%% -define(SNMP_MAX_SIZE_DELETES_1M,  'max-size-deletes-1m').
+%% -define(SNMP_MIN_SIZE_WRITES_1M,   'min-size-writes-1m').
+%% -define(SNMP_MIN_SIZE_READS_1M,    'min-size-reads-1m').
+%% -define(SNMP_MIN_SIZE_DELETES_1M,  'min-size-deletes-1m').
+%% -define(SNMP_MEAN_SIZE_WRITES_1M,  'avg-size-writes-1m').
+%% -define(SNMP_MEAN_SIZE_READS_1M,   'avg-size-reads-1m').
+%% -define(SNMP_MEAN_SIZE_DELETES_1M, 'avg-size-deletes-1m').
+
+-define(SNMP_COUNT_WRITES_5M,  'req-writes-5m').
+-define(SNMP_COUNT_READS_5M,   'req-reads-5m').
+-define(SNMP_COUNT_DELETES_5M, 'req-deletes-5m').
+
+-define(SNMP_SIZE_WRITES_5M,  'size-writes-5m').
+-define(SNMP_SIZE_READS_5M,   'size-reads-5m').
+-define(SNMP_SIZE_DELETES_5M, 'size-deletes-5m').
+
+%% -define(SNMP_MAX_SIZE_WRITES_5M,   'max-size-writes-5m').
+%% -define(SNMP_MAX_SIZE_READS_5M,    'max-size-reads-5m').
+%% -define(SNMP_MAX_SIZE_DELETES_5M,  'max-size-deletes-5m').
+%% -define(SNMP_MIN_SIZE_WRITES_5M,   'min-size-writes-5m').
+%% -define(SNMP_MIN_SIZE_READS_5M,    'min-size-reads-5m').
+%% -define(SNMP_MIN_SIZE_DELETES_5M,  'min-size-deletes-5m').
+%% -define(SNMP_MEAN_SIZE_WRITES_5M,  'avg-size-writes-5m').
+%% -define(SNMP_MEAN_SIZE_READS_5M,   'avg-size-reads-5m').
+%% -define(SNMP_MEAN_SIZE_DELETES_5M, 'avg-size-deletes-5m').
+
+
+%% vm-stat metrics
+-define(METRIC_GRP_VM_1MIN, 'vm_stats_1m').
+-define(METRIC_GRP_VM_5MIN, 'vm_stats_5m').
+
+-define(STAT_VM_TOTAL_MEM,  'vm-total-mem').
+-define(STAT_VM_PROCS_MEM,  'vm-procs-mem').
+-define(STAT_VM_SYSTEM_MEM, 'vm-system-mem').
+-define(STAT_VM_ETS_MEM,    'vm-ets-mem').
+-define(STAT_VM_PROC_COUNT, 'vm-proc-count').
+
+-define(SNMP_VM_TOTAL_MEM_1M,  'vm-total-mem-1m').
+-define(SNMP_VM_PROCS_MEM_1M,  'vm-procs-mem-1m').
+-define(SNMP_VM_SYSTEM_MEM_1M, 'vm-system-mem-1m').
+-define(SNMP_VM_ETS_MEM_1M,    'vm-ets-mem-1m').
+-define(SNMP_VM_PROC_COUNT_1M, 'vm-proc-count-1m').
+
+-define(SNMP_VM_TOTAL_MEM_5M,  'vm-total-mem-5m').
+-define(SNMP_VM_PROCS_MEM_5M,  'vm-procs-mem-5m').
+-define(SNMP_VM_SYSTEM_MEM_5M, 'vm-system-mem-5m').
+-define(SNMP_VM_ETS_MEM_5M,    'vm-ets-mem-5m').
+-define(SNMP_VM_PROC_COUNT_5M, 'vm-proc-count-5m').
+
+
+-define(STAT_ELEMENT_MEAN,   'arithmetic_mean').
+-define(STAT_ELEMENT_MEDIAN, 'median').
+-define(STAT_ELEMENT_MAX,    'max').
+-define(STAT_ELEMENT_MIN,    'min').
 
 
 %% @doc SNMPA Value
