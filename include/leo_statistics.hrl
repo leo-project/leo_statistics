@@ -29,14 +29,20 @@
 -define(STAT_INTERVAL_5M, 300).
 
 -ifdef(TEST).
--define(SNMP_SYNC_INTERVAL_S,     1000). %% 1 sec
--define(SNMP_SYNC_INTERVAL_L,     3000). %% 3 sec
--define(STATISTICS_SYNC_INTERVAL, 1000). %% 1 sec
+-define(SNMP_SYNC_INTERVAL_5S,   5). %%  5ms
+-define(SNMP_SYNC_INTERVAL_10S, 10). %% 10ms
+-define(SNMP_SYNC_INTERVAL_20S, 20). %% 20ms
+-define(SNMP_SYNC_INTERVAL_30S, 30). %% 30ms
+-define(SNMP_SYNC_INTERVAL_60S, 60). %% 60ms
+-define(STATISTICS_SYNC_INTERVAL, 1000). %% 1s
 -define(DEF_SMPLING_TIMEOUT,       500). %% 500ms
 -else.
--define(SNMP_SYNC_INTERVAL_S,     ?STAT_INTERVAL_1M * 1000). %%  60 sec %% short
--define(SNMP_SYNC_INTERVAL_L,     ?STAT_INTERVAL_5M * 1000). %% 300 sec %% long
--define(STATISTICS_SYNC_INTERVAL, 10000). %%  10 sec
+-define(SNMP_SYNC_INTERVAL_5S,  timer:seconds(5)).    %%  5sec
+-define(SNMP_SYNC_INTERVAL_10S, timer:seconds(10)).   %% 10sec
+-define(SNMP_SYNC_INTERVAL_20S, timer:seconds(20)).   %% 20sec
+-define(SNMP_SYNC_INTERVAL_30S, timer:seconds(30)).   %% 30sec
+-define(SNMP_SYNC_INTERVAL_60S, timer:seconds(60)).   %% 60sec
+-define(STATISTICS_SYNC_INTERVAL, timer:seconds(10)). %% 10sec
 -define(DEF_SMPLING_TIMEOUT,      timer:seconds(10)). %% 10sec
 -endif.
 
