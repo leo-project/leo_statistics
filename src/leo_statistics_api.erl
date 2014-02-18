@@ -66,6 +66,13 @@ start_link(Application) ->
 -spec(create_tables(disc_copies|ram_copies, list(atom())) ->
              ok).
 create_tables(MnesiaDiscType, Nodes) ->
+    LoadedApps = application:loaded_applications(),
+    case lists:keyfind('mnesia', 1, LoadedApps) of
+        false ->
+            mnesia:start();
+        _ ->
+            void
+    end,
     {atomic,ok} = svc_tbl_schema:create_table(MnesiaDiscType, Nodes),
     {atomic,ok} = svc_tbl_column:create_table(MnesiaDiscType, Nodes),
     {atomic,ok} = svc_tbl_metric_group:create_table(MnesiaDiscType, Nodes),
