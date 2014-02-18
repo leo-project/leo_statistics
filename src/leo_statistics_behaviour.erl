@@ -24,19 +24,7 @@
 %% @end
 %%======================================================================
 -module(leo_statistics_behaviour).
-
 -author('Yosuke Hara').
 
--export([behaviour_info/1]).
-
-behaviour_info(callbacks) ->
-    [
-     %% init() -> ok.
-     {init, 0},
-
-     %% hande_call({sync, integer()}) -> ok.
-     {handle_call, 1}
-    ];
-behaviour_info(_Other) ->
-    undefined.
-
+-callback(handle_notify() ->
+                 ok | {error, any()}).

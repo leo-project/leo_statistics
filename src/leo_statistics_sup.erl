@@ -28,10 +28,13 @@
 -behaviour(supervisor).
 
 %% API
--export([start_link/0]).
+-export([start_link/0,
+         stop/0,
+         start_child/2
+        ]).
 
 %% Supervisor callbacks
--export([init/1, stop/0]).
+-export([init/1]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -52,6 +55,22 @@ stop() ->
     end.
 
 
+%% @doc Launch metrics
+%%
+-spec(start_child(atom(), pos_integer()) ->
+             ok | {error, any()}).
+start_child(Module, Window) ->
+    PropListOfCounts = supervisor:count_children(?MODULE),
+    Specs = leo_misc:get_value('specs', PropListOfCounts),
+
+    Id = list_to_atom(lists:append(["leo_statistics_", integer_to_list(Specs)])),
+    ChildSpec = {Id,
+                 {leo_statistics_sampler, start_link, [Module, Window]},
+                 permanent, 2000, worker, [leo_statistics_sampler]},
+    {ok, _Pid} = supervisor:start_child(leo_statistics_sup, ChildSpec),
+    ok.
+
+
 %% ---------------------------------------------------------------------
 %% Callbacks
 %% ---------------------------------------------------------------------
@@ -60,5 +79,16 @@ stop() ->
 %% @end
 %% @private
 init([]) ->
-    {ok, {{one_for_one, 5, 60}, []}}.
+    Children = [
+                {folsom,
+                 {folsom_sup, start_link, []},
+                 permanent, 2000, supervisor, [folsom]},
 
+                {savanna_commons_sup,
+                 {savanna_commons_sup, start_link, []},
+                 permanent,
+                 2000,
+                 supervisor,
+                 [savanna_commons_sup]}
+               ],
+    {ok, {{one_for_one, 5, 60}, Children}}.
