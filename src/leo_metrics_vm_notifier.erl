@@ -38,57 +38,37 @@
 %% @doc
 -spec(notify(atom(), {atom(),any()}) ->
              ok | {error, any()}).
-notify(?METRIC_GRP_VM_1MIN = MetricGroup, {?STAT_VM_TOTAL_MEM = Key, Stats}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Stats]),
+notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_TOTAL_MEM, Stats}) ->
     set_variable(?SNMP_VM_TOTAL_MEM_1M, Stats);
-notify(?METRIC_GRP_VM_1MIN = MetricGroup, {?STAT_VM_PROCS_MEM = Key, Stats}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Stats]),
+notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_PROCS_MEM, Stats}) ->
     set_variable(?SNMP_VM_PROCS_MEM_1M, Stats);
-notify(?METRIC_GRP_VM_1MIN = MetricGroup, {?STAT_VM_SYSTEM_MEM = Key, Stats}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Stats]),
+notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_SYSTEM_MEM, Stats}) ->
     set_variable(?SNMP_VM_SYSTEM_MEM_1M, Stats);
-notify(?METRIC_GRP_VM_1MIN = MetricGroup, {?STAT_VM_ETS_MEM = Key, Stats}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Stats]),
+notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_ETS_MEM, Stats}) ->
     set_variable(?SNMP_VM_ETS_MEM_1M, Stats);
-notify(?METRIC_GRP_VM_1MIN = MetricGroup, {?STAT_VM_PROC_COUNT = Key, Stats}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Stats]),
+notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_PROC_COUNT, Stats}) ->
     set_variable(?SNMP_VM_PROC_COUNT_1M, Stats);
 
 
-notify(?METRIC_GRP_VM_5MIN = MetricGroup, {?STAT_VM_TOTAL_MEM = Key, Stats}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Stats]),
+notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_TOTAL_MEM, Stats}) ->
     set_variable(?SNMP_VM_TOTAL_MEM_5M, Stats);
-notify(?METRIC_GRP_VM_5MIN = MetricGroup, {?STAT_VM_PROCS_MEM = Key, Stats}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Stats]),
+notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_PROCS_MEM, Stats}) ->
     set_variable(?SNMP_VM_PROCS_MEM_5M, Stats);
-notify(?METRIC_GRP_VM_5MIN = MetricGroup, {?STAT_VM_SYSTEM_MEM = Key, Stats}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Stats]),
+notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_SYSTEM_MEM, Stats}) ->
     set_variable(?SNMP_VM_SYSTEM_MEM_5M, Stats);
-notify(?METRIC_GRP_VM_5MIN = MetricGroup, {?STAT_VM_ETS_MEM = Key, Stats}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Stats]),
+notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_ETS_MEM, Stats}) ->
     set_variable(?SNMP_VM_ETS_MEM_5M, Stats);
-notify(?METRIC_GRP_VM_5MIN = MetricGroup, {?STAT_VM_PROC_COUNT = Key, Stats}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Stats]),
+notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_PROC_COUNT, Stats}) ->
     set_variable(?SNMP_VM_PROC_COUNT_5M, Stats);
 notify(_,_) ->
     ok.
 
 
 %%--------------------------------------------------------------------
-%% Callback
+%% Internal Functions
 %%--------------------------------------------------------------------
 %% @private
 set_variable(Item, Stats) ->
     Mean = leo_misc:get_value(?STAT_ELEMENT_MEAN, Stats, 0),
-    snmp_generic:variable_set(Item, Mean),
+    snmp_generic:variable_set(Item, erlang:round(Mean)),
     ok.

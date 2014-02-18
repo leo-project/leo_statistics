@@ -58,8 +58,7 @@ start_link(Window) ->
             %% create a schema
             NumOfSamples = 3000,
             ok = savanna_commons:create_schema(
-                   ?SCHEMA_NAME, [
-                                  #sv_column{name = ?STAT_VM_TOTAL_MEM,
+                   ?SCHEMA_NAME, [#sv_column{name = ?STAT_VM_TOTAL_MEM,
                                              type = ?COL_TYPE_H_UNIFORM,
                                              constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
                                   #sv_column{name = ?STAT_VM_PROCS_MEM,
@@ -91,8 +90,6 @@ start_link(Window) ->
 -spec(handle_notify() ->
              ok).
 handle_notify() ->
-    ?debugVal('handle_notify'),
-
     TotalMem = erlang:memory(total),
     ProcMem  = erlang:memory(processes),
     SysMem   = erlang:memory(system),
@@ -110,6 +107,8 @@ handle_notify() ->
     savanna_commons:notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_SYSTEM_MEM, SysMem}),
     savanna_commons:notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_ETS_MEM,    EtsMem}),
     savanna_commons:notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_PROC_COUNT, Procs}),
+
+    snmp_generic:variable_set(?SNMP_NODE_NAME, atom_to_list(erlang:node())),
     ok.
 
 

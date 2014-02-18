@@ -39,72 +39,43 @@
 -spec(notify(atom(), {atom(),any()}) ->
              ok | {error, any()}).
 %% 1min
-notify(?METRIC_GRP_REQ_1MIN = MetricGroup, {?STAT_COUNT_GET = Key, Count}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Count]),
-    snmp_generic:variable_set(?SNMP_COUNT_READS_1M, Count),
-    ok;
-notify(?METRIC_GRP_REQ_1MIN = MetricGroup, {?STAT_COUNT_PUT = Key, Count}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Count]),
-    snmp_generic:variable_set(?SNMP_COUNT_WRITES_1M, Count),
-    ok;
-notify(?METRIC_GRP_REQ_1MIN = MetricGroup, {?STAT_COUNT_DEL = Key, Count}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Count]),
-    snmp_generic:variable_set(?SNMP_COUNT_DELETES_1M, Count),
-    ok;
+notify(?METRIC_GRP_REQ_1MIN, {?STAT_COUNT_GET, Count}) ->
+    set_variable(?SNMP_COUNT_READS_1M, Count);
+notify(?METRIC_GRP_REQ_1MIN, {?STAT_COUNT_PUT, Count}) ->
+    set_variable(?SNMP_COUNT_WRITES_1M, Count);
+notify(?METRIC_GRP_REQ_1MIN, {?STAT_COUNT_DEL, Count}) ->
+    set_variable(?SNMP_COUNT_DELETES_1M, Count);
 
-notify(?METRIC_GRP_REQ_1MIN = MetricGroup, {?STAT_SIZE_GET = Key, Size}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Size]),
-    snmp_generic:variable_set(?SNMP_SIZE_READS_1M, Size),
-    ok;
-notify(?METRIC_GRP_REQ_1MIN = MetricGroup, {?STAT_SIZE_PUT = Key, Size}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Size]),
-    snmp_generic:variable_set(?SNMP_SIZE_READS_1M, Size),
-    ok;
-notify(?METRIC_GRP_REQ_1MIN = MetricGroup, {?STAT_SIZE_DEL = Key, Size}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Size]),
-    snmp_generic:variable_set(?SNMP_SIZE_DELETES_1M, Size),
-    ok;
-
+notify(?METRIC_GRP_REQ_1MIN, {?STAT_SIZE_GET, Size}) ->
+    set_variable(?SNMP_SIZE_READS_1M, Size);
+notify(?METRIC_GRP_REQ_1MIN, {?STAT_SIZE_PUT, Size}) ->
+    set_variable(?SNMP_SIZE_WRITES_1M, Size);
+notify(?METRIC_GRP_REQ_1MIN, {?STAT_SIZE_DEL, Size}) ->
+    set_variable(?SNMP_SIZE_DELETES_1M, Size);
 
 %% 5min
-notify(?METRIC_GRP_REQ_5MIN = MetricGroup, {?STAT_COUNT_GET = Key, Count}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Count]),
-    snmp_generic:variable_set(?SNMP_COUNT_READS_5M, Count),
-    ok;
-notify(?METRIC_GRP_REQ_5MIN = MetricGroup, {?STAT_COUNT_PUT = Key, Count}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Count]),
-    snmp_generic:variable_set(?SNMP_COUNT_WRITES_5M, Count),
-    ok;
-notify(?METRIC_GRP_REQ_5MIN = MetricGroup, {?STAT_COUNT_DEL = Key, Count}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Count]),
-    snmp_generic:variable_set(?SNMP_COUNT_DELETES_5M, Count),
-    ok;
+notify(?METRIC_GRP_REQ_5MIN, {?STAT_COUNT_GET, Count}) ->
+    set_variable(?SNMP_COUNT_READS_5M, Count);
+notify(?METRIC_GRP_REQ_5MIN, {?STAT_COUNT_PUT, Count}) ->
+    set_variable(?SNMP_COUNT_WRITES_5M, Count);
+notify(?METRIC_GRP_REQ_5MIN, {?STAT_COUNT_DEL, Count}) ->
+    set_variable(?SNMP_COUNT_DELETES_5M, Count);
 
-notify(?METRIC_GRP_REQ_5MIN = MetricGroup, {?STAT_SIZE_GET = Key, Size}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Size]),
-    snmp_generic:variable_set(?SNMP_SIZE_READS_5M, Size),
-    ok;
-notify(?METRIC_GRP_REQ_5MIN = MetricGroup, {?STAT_SIZE_PUT = Key, Size}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Size]),
-    snmp_generic:variable_set(?SNMP_SIZE_READS_5M, Size),
-    ok;
-notify(?METRIC_GRP_REQ_5MIN = MetricGroup, {?STAT_SIZE_DEL = Key, Size}) ->
-    io:format("metric-group:~w, key:~w, values:~p",
-              [MetricGroup, Key, Size]),
-    snmp_generic:variable_set(?SNMP_SIZE_DELETES_5M, Size),
-    ok;
+notify(?METRIC_GRP_REQ_5MIN, {?STAT_SIZE_GET, Size}) ->
+    set_variable(?SNMP_SIZE_READS_5M, Size);
+notify(?METRIC_GRP_REQ_5MIN, {?STAT_SIZE_PUT, Size}) ->
+    set_variable(?SNMP_SIZE_WRITES_5M, Size);
+notify(?METRIC_GRP_REQ_5MIN, {?STAT_SIZE_DEL, Size}) ->
+    set_variable(?SNMP_SIZE_DELETES_5M, Size);
 
 notify(_,_) ->
     ok.
 
+
+%%--------------------------------------------------------------------
+%% Internal Functions
+%%--------------------------------------------------------------------
+%% @private
+set_variable(Item, Value) ->
+    snmp_generic:variable_set(Item, erlang:round(Value)),
+    ok.

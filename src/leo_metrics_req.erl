@@ -55,17 +55,6 @@ start_link(Window) ->
             _NumOfSamples = 3000,
             ok = savanna_commons:create_schema(
                    ?SCHEMA_NAME, [
-                                  %% @TODO - histogram
-                                  %% #sv_column{name = ?STAT_HISTO_GET,
-                                  %%            type = ?COL_TYPE_H_UNIFORM,
-                                  %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                                  %% #sv_column{name = ?STAT_HISTO_PUT,
-                                  %%            type = ?COL_TYPE_H_UNIFORM,
-                                  %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                                  %% #sv_column{name = ?STAT_HISTO_DEL,
-                                  %%            type = ?COL_TYPE_H_UNIFORM,
-                                  %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-
                                   %% counter-1: # of request
                                   #sv_column{name = ?STAT_COUNT_GET,
                                              type = ?COL_TYPE_COUNTER,
@@ -75,18 +64,29 @@ start_link(Window) ->
                                              constraint = []},
                                   #sv_column{name = ?STAT_COUNT_DEL,
                                              type = ?COL_TYPE_COUNTER,
-                                             constraint = []},
-
-                                  %% counter-1: summary of file-size
-                                  #sv_column{name = ?STAT_SIZE_GET,
-                                             type = ?COL_TYPE_COUNTER,
-                                             constraint = []},
-                                  #sv_column{name = ?STAT_SIZE_PUT,
-                                             type = ?COL_TYPE_COUNTER,
-                                             constraint = []},
-                                  #sv_column{name = ?STAT_SIZE_DEL,
-                                             type = ?COL_TYPE_COUNTER,
                                              constraint = []}
+
+                                  %% @TODO summary of file-size
+                                  %% #sv_column{name = ?STAT_SIZE_GET,
+                                  %%            type = ?COL_TYPE_COUNTER,
+                                  %%            constraint = []},
+                                  %% #sv_column{name = ?STAT_SIZE_PUT,
+                                  %%            type = ?COL_TYPE_COUNTER,
+                                  %%            constraint = []},
+                                  %% #sv_column{name = ?STAT_SIZE_DEL,
+                                  %%            type = ?COL_TYPE_COUNTER,
+                                  %%            constraint = []},
+                                  %%
+                                  %% @TODO - histogram
+                                  %% #sv_column{name = ?STAT_HISTO_GET,
+                                  %%            type = ?COL_TYPE_H_UNIFORM,
+                                  %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                                  %% #sv_column{name = ?STAT_HISTO_PUT,
+                                  %%            type = ?COL_TYPE_H_UNIFORM,
+                                  %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                                  %% #sv_column{name = ?STAT_HISTO_DEL,
+                                  %%            type = ?COL_TYPE_H_UNIFORM,
+                                  %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
                                  ]),
 
             %% generate metrics from the schema
@@ -107,35 +107,17 @@ notify(Column) ->
 
 -spec(notify(atom(), pos_integer()) ->
              ok | {error, any()}).
-notify(?STAT_COUNT_GET = Key, Size) ->
+notify(?STAT_COUNT_GET = Key,_Size) ->
     savanna_commons:notify(?METRIC_GRP_REQ_1MIN, {Key, 1}),
-    savanna_commons:notify(?METRIC_GRP_REQ_1MIN, {?STAT_SIZE_GET,  Size}),
-
     savanna_commons:notify(?METRIC_GRP_REQ_5MIN, {Key, 1}),
-    savanna_commons:notify(?METRIC_GRP_REQ_5MIN, {?STAT_SIZE_GET,  Size}),
-
-    %% savanna_commons:notify(?METRIC_GRP_REQ_1MIN, {?STAT_HISTO_GET, Size}),
-    %% savanna_commons:notify(?METRIC_GRP_REQ_5MIN, {?STAT_HISTO_GET, Size}),
     ok;
-notify(?STAT_COUNT_PUT = Key, Size) ->
+notify(?STAT_COUNT_PUT = Key,_Size) ->
     savanna_commons:notify(?METRIC_GRP_REQ_1MIN, {Key, 1}),
-    savanna_commons:notify(?METRIC_GRP_REQ_1MIN, {?STAT_SIZE_PUT,  Size}),
-
     savanna_commons:notify(?METRIC_GRP_REQ_5MIN, {Key, 1}),
-    savanna_commons:notify(?METRIC_GRP_REQ_5MIN, {?STAT_SIZE_PUT,  Size}),
-
-    %% savanna_commons:notify(?METRIC_GRP_REQ_1MIN, {?STAT_HISTO_PUT, Size}),
-    %% savanna_commons:notify(?METRIC_GRP_REQ_5MIN, {?STAT_HISTO_PUT, Size}),
     ok;
-notify(?STAT_COUNT_DEL = Key, Size) ->
+notify(?STAT_COUNT_DEL = Key,_Size) ->
     savanna_commons:notify(?METRIC_GRP_REQ_1MIN, {Key, 1}),
-    savanna_commons:notify(?METRIC_GRP_REQ_1MIN, {?STAT_SIZE_DEL,  Size}),
-
     savanna_commons:notify(?METRIC_GRP_REQ_5MIN, {Key, 1}),
-    savanna_commons:notify(?METRIC_GRP_REQ_5MIN, {?STAT_SIZE_DEL,  Size}),
-
-    %% savanna_commons:notify(?METRIC_GRP_REQ_1MIN, {?STAT_HISTO_DEL, Size}),
-    %% savanna_commons:notify(?METRIC_GRP_REQ_5MIN, {?STAT_HISTO_DEL, Size}),
     ok;
 notify(_,_) ->
     ok.
@@ -145,9 +127,5 @@ notify(_,_) ->
 %% Callback
 %%--------------------------------------------------------------------
 handle_notify() ->
-    ?debugVal('handle_notify'),
+    snmp_generic:variable_set(?SNMP_NODE_NAME, atom_to_list(erlang:node())),
     ok.
-
-%%--------------------------------------------------------------------
-%% Internal Function
-%%--------------------------------------------------------------------
