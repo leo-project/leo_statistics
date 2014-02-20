@@ -77,9 +77,9 @@ start_link(Window) ->
 
             %% generate metrics from the schema
             ok = savanna_commons:create_metrics_by_schema(?SCHEMA_NAME, ?METRIC_GRP_VM_1MIN,
-                                                          timer:seconds(60),  ?NOTIFIER),
+                                                          60,  ?NOTIFIER),
             ok = savanna_commons:create_metrics_by_schema(?SCHEMA_NAME, ?METRIC_GRP_VM_5MIN,
-                                                          timer:seconds(300), ?NOTIFIER),
+                                                          300, ?NOTIFIER),
             ok
     end.
 
