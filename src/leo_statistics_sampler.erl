@@ -64,26 +64,21 @@ init([Mod, Timeout]) ->
     {ok, #state{mod = Mod,
                 timeout = Timeout}, Timeout}.
 
-handle_call(_Request, _From, State) ->
+handle_call(_Request, _From, #state{timeout = Timeout} = State) ->
     Reply = ok,
-    {reply, Reply, State}.
+    {reply, Reply, State, Timeout}.
 
 handle_cast(stop, State) ->
     {stop, normal, State};
 
-handle_cast(_Msg, State) ->
-    {noreply, State}.
+handle_cast(_Msg, #state{timeout = Timeout} = State) ->
+    {noreply, State, Timeout}.
 
 handle_info(timeout, State=#state{mod = Mod,
                                   timeout = Timeout}) ->
-    spawn(fun() ->
-                  timer:sleep(erlang:phash2(leo_date:clock(), 250)),
-                  catch Mod:handle_notify()
-          end),
-    {noreply, State, Timeout};
-
-handle_info(_Info, State) ->
-    {noreply, State}.
+    timer:sleep(erlang:phash2(leo_date:clock(), 250)),
+    catch Mod:handle_notify(),
+    {noreply, State, Timeout}.
 
 terminate(_Reason, _State) ->
     ok.
