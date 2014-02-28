@@ -29,46 +29,83 @@
 -include_lib("eunit/include/eunit.hrl").
 
 %% callback
--export([notify/2]).
+-export([notify/1]).
 
 
 %%--------------------------------------------------------------------
 %% Callback
 %%--------------------------------------------------------------------
 %% @doc
--spec(notify(atom(), {atom(),any()}) ->
+-spec(notify(#sv_result{}) ->
              ok | {error, any()}).
-%% 1min
-notify(?METRIC_GRP_REQ_1MIN, {?STAT_COUNT_GET, Count}) ->
+%% 1min + count
+notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_1MIN,
+                  col_name = ?STAT_COUNT_GET,
+                  result = Count}) ->
     set_variable(?SNMP_COUNT_READS_1M, Count);
-notify(?METRIC_GRP_REQ_1MIN, {?STAT_COUNT_PUT, Count}) ->
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_1MIN,
+                  col_name = ?STAT_COUNT_PUT,
+                  result = Count}) ->
     set_variable(?SNMP_COUNT_WRITES_1M, Count);
-notify(?METRIC_GRP_REQ_1MIN, {?STAT_COUNT_DEL, Count}) ->
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_1MIN,
+                  col_name = ?STAT_COUNT_DEL,
+                  result = Count}) ->
     set_variable(?SNMP_COUNT_DELETES_1M, Count);
 
-notify(?METRIC_GRP_REQ_1MIN, {?STAT_SIZE_GET, Size}) ->
-    set_variable(?SNMP_SIZE_READS_1M, Size);
-notify(?METRIC_GRP_REQ_1MIN, {?STAT_SIZE_PUT, Size}) ->
-    set_variable(?SNMP_SIZE_WRITES_1M, Size);
-notify(?METRIC_GRP_REQ_1MIN, {?STAT_SIZE_DEL, Size}) ->
-    set_variable(?SNMP_SIZE_DELETES_1M, Size);
 
-%% 5min
-notify(?METRIC_GRP_REQ_5MIN, {?STAT_COUNT_GET, Count}) ->
+%% 1min + size
+notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_1MIN,
+                  col_name = ?STAT_SIZE_GET,
+                  result = Count}) ->
+    set_variable(?SNMP_SIZE_READS_1M, Count);
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_1MIN,
+                  col_name = ?STAT_SIZE_PUT,
+                  result = Count}) ->
+    set_variable(?SNMP_SIZE_WRITES_1M, Count);
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_1MIN,
+                  col_name = ?STAT_SIZE_DEL,
+                  result = Count}) ->
+    set_variable(?SNMP_SIZE_DELETES_1M, Count);
+
+
+%% 5min + count
+notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_5MIN,
+                  col_name = ?STAT_COUNT_GET,
+                  result = Count}) ->
     set_variable(?SNMP_COUNT_READS_5M, Count);
-notify(?METRIC_GRP_REQ_5MIN, {?STAT_COUNT_PUT, Count}) ->
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_5MIN,
+                  col_name = ?STAT_COUNT_PUT,
+                  result = Count}) ->
     set_variable(?SNMP_COUNT_WRITES_5M, Count);
-notify(?METRIC_GRP_REQ_5MIN, {?STAT_COUNT_DEL, Count}) ->
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_5MIN,
+                  col_name = ?STAT_COUNT_DEL,
+                  result = Count}) ->
     set_variable(?SNMP_COUNT_DELETES_5M, Count);
 
-notify(?METRIC_GRP_REQ_5MIN, {?STAT_SIZE_GET, Size}) ->
-    set_variable(?SNMP_SIZE_READS_5M, Size);
-notify(?METRIC_GRP_REQ_5MIN, {?STAT_SIZE_PUT, Size}) ->
-    set_variable(?SNMP_SIZE_WRITES_5M, Size);
-notify(?METRIC_GRP_REQ_5MIN, {?STAT_SIZE_DEL, Size}) ->
-    set_variable(?SNMP_SIZE_DELETES_5M, Size);
+%% 5min + size
+notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_5MIN,
+                  col_name = ?STAT_SIZE_GET,
+                  result = Count}) ->
+    set_variable(?SNMP_SIZE_READS_5M, Count);
 
-notify(_,_) ->
+notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_5MIN,
+                  col_name = ?STAT_SIZE_PUT,
+                  result = Count}) ->
+    set_variable(?SNMP_SIZE_WRITES_5M, Count);
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_5MIN,
+                  col_name = ?STAT_SIZE_DEL,
+                  result = Count}) ->
+    set_variable(?SNMP_SIZE_DELETES_5M, Count);
+
+
+notify(_) ->
     ok.
 
 
