@@ -29,38 +29,69 @@
 -include_lib("eunit/include/eunit.hrl").
 
 %% callback
--export([notify/2]).
+-export([notify/1]).
 
 
 %%--------------------------------------------------------------------
 %% Callback
 %%--------------------------------------------------------------------
 %% @doc
--spec(notify(atom(), {atom(),any()}) ->
+%% @doc
+-spec(notify(#sv_result{}) ->
              ok | {error, any()}).
-notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_TOTAL_MEM, Stats}) ->
+%% 1min
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_1MIN,
+                  col_name = ?STAT_VM_TOTAL_MEM,
+                  result = Stats}) ->
     set_variable(?SNMP_VM_TOTAL_MEM_1M, Stats);
-notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_PROCS_MEM, Stats}) ->
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_1MIN,
+                  col_name = ?STAT_VM_PROCS_MEM,
+                  result = Stats}) ->
     set_variable(?SNMP_VM_PROCS_MEM_1M, Stats);
-notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_SYSTEM_MEM, Stats}) ->
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_1MIN,
+                  col_name = ?STAT_VM_SYSTEM_MEM,
+                  result = Stats}) ->
     set_variable(?SNMP_VM_SYSTEM_MEM_1M, Stats);
-notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_ETS_MEM, Stats}) ->
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_1MIN,
+                  col_name = ?STAT_VM_ETS_MEM,
+                  result = Stats}) ->
     set_variable(?SNMP_VM_ETS_MEM_1M, Stats);
-notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_PROC_COUNT, Stats}) ->
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_1MIN,
+                  col_name = ?STAT_VM_PROC_COUNT,
+                  result = Stats}) ->
     set_variable(?SNMP_VM_PROC_COUNT_1M, Stats);
 
-
-notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_TOTAL_MEM, Stats}) ->
+%% 5min
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_5MIN,
+                  col_name = ?STAT_VM_TOTAL_MEM,
+                  result = Stats}) ->
     set_variable(?SNMP_VM_TOTAL_MEM_5M, Stats);
-notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_PROCS_MEM, Stats}) ->
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_5MIN,
+                  col_name = ?STAT_VM_PROCS_MEM,
+                  result = Stats}) ->
     set_variable(?SNMP_VM_PROCS_MEM_5M, Stats);
-notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_SYSTEM_MEM, Stats}) ->
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_5MIN,
+                  col_name = ?STAT_VM_SYSTEM_MEM,
+                  result = Stats}) ->
     set_variable(?SNMP_VM_SYSTEM_MEM_5M, Stats);
-notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_ETS_MEM, Stats}) ->
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_5MIN,
+                  col_name = ?STAT_VM_ETS_MEM,
+                  result = Stats}) ->
     set_variable(?SNMP_VM_ETS_MEM_5M, Stats);
-notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_PROC_COUNT, Stats}) ->
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_5MIN,
+                  col_name = ?STAT_VM_PROC_COUNT,
+                  result = Stats}) ->
     set_variable(?SNMP_VM_PROC_COUNT_5M, Stats);
-notify(_,_) ->
+
+notify(_) ->
     ok.
 
 

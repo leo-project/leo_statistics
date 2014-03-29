@@ -50,8 +50,8 @@ start_link(Application) ->
         [] ->
             ok;
         SNMPAgent ->
-            application:start(leo_statistics),
-            application:start(snmp),
+            ok = application:start(leo_statistics),
+            ok = application:start(snmp),
 
             case catch snmpa:load_mibs(snmp_master_agent, [SNMPAgent]) of
                 ok ->
