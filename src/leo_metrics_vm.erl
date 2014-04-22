@@ -58,21 +58,21 @@ start_link(Window) ->
             %% create a schema
             NumOfSamples = 3000,
             ok = savanna_commons:create_schema(
-                   ?SCHEMA_NAME, [#sv_column{name = ?STAT_VM_TOTAL_MEM,
-                                             type = ?COL_TYPE_H_UNIFORM,
-                                             constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                                  #sv_column{name = ?STAT_VM_PROCS_MEM,
-                                             type = ?COL_TYPE_H_UNIFORM,
-                                             constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                                  #sv_column{name = ?STAT_VM_SYSTEM_MEM,
-                                             type = ?COL_TYPE_H_UNIFORM,
-                                             constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                                  #sv_column{name = ?STAT_VM_ETS_MEM,
-                                             type = ?COL_TYPE_H_UNIFORM,
-                                             constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                                  #sv_column{name = ?STAT_VM_PROC_COUNT,
-                                             type = ?COL_TYPE_H_UNIFORM,
-                                             constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
+                   ?SCHEMA_NAME, [#?SV_COLUMN{name = ?STAT_VM_TOTAL_MEM,
+                                              type = ?COL_TYPE_H_UNIFORM,
+                                              constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                                  #?SV_COLUMN{name = ?STAT_VM_PROCS_MEM,
+                                              type = ?COL_TYPE_H_UNIFORM,
+                                              constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                                  #?SV_COLUMN{name = ?STAT_VM_SYSTEM_MEM,
+                                              type = ?COL_TYPE_H_UNIFORM,
+                                              constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                                  #?SV_COLUMN{name = ?STAT_VM_ETS_MEM,
+                                              type = ?COL_TYPE_H_UNIFORM,
+                                              constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                                  #?SV_COLUMN{name = ?STAT_VM_PROC_COUNT,
+                                              type = ?COL_TYPE_H_UNIFORM,
+                                              constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
                                  ]),
 
             %% generate metrics from the schema

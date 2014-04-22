@@ -56,35 +56,35 @@ start_link(Window) ->
             ok = savanna_commons:create_schema(
                    ?SCHEMA_NAME, [
                                   %% counter-1: # of request
-                                  #sv_column{name = ?STAT_COUNT_GET,
-                                             type = ?COL_TYPE_COUNTER,
-                                             constraint = []},
-                                  #sv_column{name = ?STAT_COUNT_PUT,
-                                             type = ?COL_TYPE_COUNTER,
-                                             constraint = []},
-                                  #sv_column{name = ?STAT_COUNT_DEL,
-                                             type = ?COL_TYPE_COUNTER,
-                                             constraint = []}
+                                  #?SV_COLUMN{name = ?STAT_COUNT_GET,
+                                              type = ?COL_TYPE_COUNTER,
+                                              constraint = []},
+                                  #?SV_COLUMN{name = ?STAT_COUNT_PUT,
+                                              type = ?COL_TYPE_COUNTER,
+                                              constraint = []},
+                                  #?SV_COLUMN{name = ?STAT_COUNT_DEL,
+                                              type = ?COL_TYPE_COUNTER,
+                                              constraint = []}
 
                                   %% @TODO summary of file-size
-                                  %% #sv_column{name = ?STAT_SIZE_GET,
+                                  %% #?SV_COLUMN{name = ?STAT_SIZE_GET,
                                   %%            type = ?COL_TYPE_COUNTER,
                                   %%            constraint = []},
-                                  %% #sv_column{name = ?STAT_SIZE_PUT,
+                                  %% #?SV_COLUMN{name = ?STAT_SIZE_PUT,
                                   %%            type = ?COL_TYPE_COUNTER,
                                   %%            constraint = []},
-                                  %% #sv_column{name = ?STAT_SIZE_DEL,
+                                  %% #?SV_COLUMN{name = ?STAT_SIZE_DEL,
                                   %%            type = ?COL_TYPE_COUNTER,
                                   %%            constraint = []},
                                   %%
                                   %% @TODO - histogram
-                                  %% #sv_column{name = ?STAT_HISTO_GET,
+                                  %% #?SV_COLUMN{name = ?STAT_HISTO_GET,
                                   %%            type = ?COL_TYPE_H_UNIFORM,
                                   %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                                  %% #sv_column{name = ?STAT_HISTO_PUT,
+                                  %% #?SV_COLUMN{name = ?STAT_HISTO_PUT,
                                   %%            type = ?COL_TYPE_H_UNIFORM,
                                   %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                                  %% #sv_column{name = ?STAT_HISTO_DEL,
+                                  %% #?SV_COLUMN{name = ?STAT_HISTO_DEL,
                                   %%            type = ?COL_TYPE_H_UNIFORM,
                                   %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
                                  ]),
