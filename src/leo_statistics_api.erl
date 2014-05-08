@@ -67,7 +67,7 @@ start_link(Application) ->
              ok).
 create_tables(MnesiaDiscType, Nodes) ->
     _ = mnesia:start(),
-    {atomic,ok} = svc_tbl_schema:create_table(MnesiaDiscType, Nodes),
-    {atomic,ok} = svc_tbl_column:create_table(MnesiaDiscType, Nodes),
-    {atomic,ok} = svc_tbl_metric_group:create_table(MnesiaDiscType, Nodes),
+    _ = svc_tbl_schema:create_table(MnesiaDiscType, Nodes),
+    _ = svc_tbl_column:create_table(MnesiaDiscType, Nodes),
+    _ = svc_tbl_metric_group:create_table(MnesiaDiscType, Nodes),
     ok.
