@@ -29,7 +29,6 @@
 
 %% API
 -export([start_link/0,
-         stop/0,
          start_child/2
         ]).
 
@@ -40,19 +39,6 @@
 
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
-
-
-%% @spec () -> ok |
-%%             not_started
-%% @doc stop process.
-%% @end
-stop() ->
-    case whereis(?MODULE) of
-        Pid when is_pid(Pid) == true ->
-            exit(Pid, shutdown),
-            ok;
-        _ -> not_started
-    end.
 
 
 %% @doc Launch metrics
