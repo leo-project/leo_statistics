@@ -4,3 +4,6 @@ ebin/
 test/snmp-agent/db
 snmpm_config_db
 manager.conf
+.leo_statistics_dialyzer_plt
+leo_statistics.dot
+leo_statistics.png
