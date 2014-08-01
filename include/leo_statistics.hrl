@@ -129,6 +129,7 @@
 -define(STAT_ELEMENT_MAX,    'max').
 -define(STAT_ELEMENT_MIN,    'min').
 
+-define(MAX_RETRY_TIMES, 3).
 
 %% @doc SNMPA Value
 -record(snmpa_value, {oid = []  :: list(),
