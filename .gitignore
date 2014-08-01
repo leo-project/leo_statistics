@@ -7,3 +7,4 @@ manager.conf
 .leo_statistics_dialyzer_plt
 leo_statistics.dot
 leo_statistics.png
+.rebar/
