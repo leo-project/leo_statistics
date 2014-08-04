@@ -43,6 +43,10 @@
 %%--------------------------------------------------------------------
 %% API
 %%--------------------------------------------------------------------
+%% @doc Launch the metrics
+%%
+-spec(start_link(non_neg_integer()) ->
+             ok | {error, any()}).
 start_link(Window) ->
     case catch mnesia:table_info('sv_schemas', all) of
         {'EXIT', _Cause} ->
@@ -50,51 +54,62 @@ start_link(Window) ->
             ok;
         _ ->
             ok = leo_statistics_sup:start_child(?MODULE, Window),
+            start_link_1(Window, 0)
+    end.
 
-            %% create a schema
-            _NumOfSamples = 3000,
-            ok = savanna_commons:create_schema(
-                   ?SCHEMA_NAME, [
-                                  %% counter-1: # of request
-                                  #?SV_COLUMN{name = ?STAT_COUNT_GET,
-                                              type = ?COL_TYPE_COUNTER,
-                                              constraint = []},
-                                  #?SV_COLUMN{name = ?STAT_COUNT_PUT,
-                                              type = ?COL_TYPE_COUNTER,
-                                              constraint = []},
-                                  #?SV_COLUMN{name = ?STAT_COUNT_DEL,
-                                              type = ?COL_TYPE_COUNTER,
-                                              constraint = []}
 
-                                  %% @TODO summary of file-size
-                                  %% #?SV_COLUMN{name = ?STAT_SIZE_GET,
-                                  %%            type = ?COL_TYPE_COUNTER,
-                                  %%            constraint = []},
-                                  %% #?SV_COLUMN{name = ?STAT_SIZE_PUT,
-                                  %%            type = ?COL_TYPE_COUNTER,
-                                  %%            constraint = []},
-                                  %% #?SV_COLUMN{name = ?STAT_SIZE_DEL,
-                                  %%            type = ?COL_TYPE_COUNTER,
-                                  %%            constraint = []},
-                                  %%
-                                  %% @TODO - histogram
-                                  %% #?SV_COLUMN{name = ?STAT_HISTO_GET,
-                                  %%            type = ?COL_TYPE_H_UNIFORM,
-                                  %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                                  %% #?SV_COLUMN{name = ?STAT_HISTO_PUT,
-                                  %%            type = ?COL_TYPE_H_UNIFORM,
-                                  %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                                  %% #?SV_COLUMN{name = ?STAT_HISTO_DEL,
-                                  %%            type = ?COL_TYPE_H_UNIFORM,
-                                  %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
-                                 ]),
+%% @private
+start_link_1(_, ?MAX_RETRY_TIMES) ->
+    {error, "Could not create the schemas"};
+start_link_1(Window, Times) ->
+    timer:sleep(250),
+    _NumOfSamples = 3000,
+    try
+        ok = savanna_commons:create_schema(
+               ?SCHEMA_NAME, [
+                              %% counter-1: # of request
+                              #?SV_COLUMN{name = ?STAT_COUNT_GET,
+                                          type = ?COL_TYPE_COUNTER,
+                                          constraint = []},
+                              #?SV_COLUMN{name = ?STAT_COUNT_PUT,
+                                          type = ?COL_TYPE_COUNTER,
+                                          constraint = []},
+                              #?SV_COLUMN{name = ?STAT_COUNT_DEL,
+                                          type = ?COL_TYPE_COUNTER,
+                                          constraint = []}
 
-            %% generate metrics from the schema
-            ok = savanna_commons:create_metrics_by_schema(
-                   ?SCHEMA_NAME, ?METRIC_GRP_REQ_1MIN, ?SV_WINDOW_1M, ?SV_STEP_1M, ?NOTIFIER),
-            ok = savanna_commons:create_metrics_by_schema(
-                   ?SCHEMA_NAME, ?METRIC_GRP_REQ_5MIN, ?SV_WINDOW_5M, ?SV_STEP_5M, ?NOTIFIER),
-            ok
+                              %% @TODO summary of file-size
+                              %% #?SV_COLUMN{name = ?STAT_SIZE_GET,
+                              %%            type = ?COL_TYPE_COUNTER,
+                              %%            constraint = []},
+                              %% #?SV_COLUMN{name = ?STAT_SIZE_PUT,
+                              %%            type = ?COL_TYPE_COUNTER,
+                              %%            constraint = []},
+                              %% #?SV_COLUMN{name = ?STAT_SIZE_DEL,
+                              %%            type = ?COL_TYPE_COUNTER,
+                              %%            constraint = []},
+                              %%
+                              %% @TODO - histogram
+                              %% #?SV_COLUMN{name = ?STAT_HISTO_GET,
+                              %%            type = ?COL_TYPE_H_UNIFORM,
+                              %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                              %% #?SV_COLUMN{name = ?STAT_HISTO_PUT,
+                              %%            type = ?COL_TYPE_H_UNIFORM,
+                              %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                              %% #?SV_COLUMN{name = ?STAT_HISTO_DEL,
+                              %%            type = ?COL_TYPE_H_UNIFORM,
+                              %%            constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
+                             ]),
+
+        %% generate metrics from the schema
+        ok = savanna_commons:create_metrics_by_schema(
+               ?SCHEMA_NAME, ?METRIC_GRP_REQ_1MIN, ?SV_WINDOW_1M, ?SV_STEP_1M, ?NOTIFIER),
+        ok = savanna_commons:create_metrics_by_schema(
+               ?SCHEMA_NAME, ?METRIC_GRP_REQ_5MIN, ?SV_WINDOW_5M, ?SV_STEP_5M, ?NOTIFIER),
+        ok
+    catch
+        _:_ ->
+            start_link_1(Window, Times + 1)
     end.
 
 
