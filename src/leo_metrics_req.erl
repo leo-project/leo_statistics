@@ -36,7 +36,7 @@
 %% callback
 -export([handle_notify/0]).
 
--define(SCHEMA_NAME, 'access_stats').
+-define(SCHEMA_NAME, << "access_stats" >>).
 -define(NOTIFIER, 'leo_metrics_req_notifier').
 
 
