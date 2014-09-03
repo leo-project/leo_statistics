@@ -49,20 +49,20 @@
 -define(SNMP_NODE_NAME, 'node-name').
 
 %% request metrics
--define(METRIC_GRP_REQ_1MIN, 'access_stats_1m').
--define(METRIC_GRP_REQ_5MIN, 'access_stats_5m').
+-define(METRIC_GRP_REQ_1MIN, << "access_stats_1m" >>).
+-define(METRIC_GRP_REQ_5MIN, << "access_stats_5m" >>).
 
--define(STAT_COUNT_GET,  'req_count_get').
--define(STAT_COUNT_PUT,  'req_count_put').
--define(STAT_COUNT_DEL,  'req_count_del').
+-define(STAT_COUNT_GET,  << "req_count_get" >>).
+-define(STAT_COUNT_PUT,  << "req_count_put" >>).
+-define(STAT_COUNT_DEL,  << "req_count_del" >>).
 
--define(STAT_HISTO_GET,  'req_histo_get').
--define(STAT_HISTO_PUT,  'req_histo_put').
--define(STAT_HISTO_DEL,  'req_histo_del').
+-define(STAT_HISTO_GET,  << "req_histo_get" >>).
+-define(STAT_HISTO_PUT,  << "req_histo_put" >>).
+-define(STAT_HISTO_DEL,  << "req_histo_del" >>).
 
--define(STAT_SIZE_GET,  'req_size_get').
--define(STAT_SIZE_PUT,  'req_size_put').
--define(STAT_SIZE_DEL,  'req_size_del').
+-define(STAT_SIZE_GET,  << "req_size_get" >>).
+-define(STAT_SIZE_PUT,  << "req_size_put" >>).
+-define(STAT_SIZE_DEL,  << "req_size_del" >>).
 
 -define(SNMP_COUNT_WRITES_1M,  'req-writes-1m').
 -define(SNMP_COUNT_READS_1M,   'req-reads-1m').
@@ -102,14 +102,14 @@
 
 
 %% vm-stat metrics
--define(METRIC_GRP_VM_1MIN, 'vm_stats_1m').
--define(METRIC_GRP_VM_5MIN, 'vm_stats_5m').
+-define(METRIC_GRP_VM_1MIN, << "vm_stats_1m" >>).
+-define(METRIC_GRP_VM_5MIN, << "vm_stats_5m" >>).
 
--define(STAT_VM_TOTAL_MEM,  'vm-total-mem').
--define(STAT_VM_PROCS_MEM,  'vm-procs-mem').
--define(STAT_VM_SYSTEM_MEM, 'vm-system-mem').
--define(STAT_VM_ETS_MEM,    'vm-ets-mem').
--define(STAT_VM_PROC_COUNT, 'vm-proc-count').
+-define(STAT_VM_TOTAL_MEM,  << "vm-total-mem" >>).
+-define(STAT_VM_PROCS_MEM,  << "vm-procs-mem" >>).
+-define(STAT_VM_SYSTEM_MEM, << "vm-system-mem" >>).
+-define(STAT_VM_ETS_MEM,    << "vm-ets-mem" >>).
+-define(STAT_VM_PROC_COUNT, << "vm-proc-count" >>).
 
 -define(SNMP_VM_TOTAL_MEM_1M,  'vm-total-mem-1m').
 -define(SNMP_VM_PROCS_MEM_1M,  'vm-procs-mem-1m').
