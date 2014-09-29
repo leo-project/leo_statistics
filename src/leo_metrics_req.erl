@@ -18,6 +18,9 @@
 %% specific language governing permissions and limitations
 %% under the License.
 %%
+%% @doc The metrics of request
+%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_metrics_req.erl]
+%% @end
 %%======================================================================
 -module(leo_metrics_req).
 -author('Yosuke Hara').
@@ -43,10 +46,10 @@
 %%--------------------------------------------------------------------
 %% API
 %%--------------------------------------------------------------------
-%% @doc Launch the metrics
+%% @doc Start the metrics
 %%
--spec(start_link(non_neg_integer()) ->
-             ok | {error, any()}).
+-spec(start_link(Window) ->
+             ok | {error, any()} when Window::non_neg_integer()).
 start_link(Window) ->
     case catch mnesia:table_info('sv_schemas', all) of
         {'EXIT', _Cause} ->
@@ -115,13 +118,14 @@ start_link_1(Window, Times) ->
 
 %% @doc Put a value into the savanna from an application
 %%
--spec(notify(atom()) ->
-             ok | {error, any()}).
+-spec(notify(Column) ->
+             ok | {error, any()} when Column::atom()).
 notify(Column) ->
     notify(Column, 0).
 
--spec(notify(atom(), pos_integer()) ->
-             ok | {error, any()}).
+-spec(notify(Key, Size) ->
+             ok | {error, any()} when Key::atom(),
+                                      Size::pos_integer()).
 notify(?STAT_COUNT_GET = Key,_Size) ->
     savanna_commons:notify(?METRIC_GRP_REQ_1MIN, {Key, 1}),
     savanna_commons:notify(?METRIC_GRP_REQ_5MIN, {Key, 1}),
@@ -141,6 +145,8 @@ notify(_,_) ->
 %%--------------------------------------------------------------------
 %% Callback
 %%--------------------------------------------------------------------
+-spec(handle_notify() ->
+             ok).
 handle_notify() ->
     snmp_generic:variable_set(?SNMP_NODE_NAME, atom_to_list(erlang:node())),
     ok.

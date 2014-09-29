@@ -18,9 +18,8 @@
 %% specific language governing permissions and limitations
 %% under the License.
 %%
-%% ---------------------------------------------------------------------
-%% Leo Statistics - Client VM Metrics
-%% @doc
+%% @doc The metrics of Erlang VM's statistics
+%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_metrics_vm.erl]
 %% @end
 %%======================================================================
 -module(leo_metrics_vm).
@@ -47,10 +46,10 @@
 %%--------------------------------------------------------------------
 %% API
 %%--------------------------------------------------------------------
-%% @doc Launch the metrics
+%% @doc Start the metrics
 %%
--spec(start_link(non_neg_integer()) ->
-             ok | {error, any()}).
+-spec(start_link(Window) ->
+             ok | {error, any()} when Window::non_neg_integer()).
 start_link(Window) ->
     case catch mnesia:table_info('sv_schemas', all) of
         {'EXIT', _Cause} ->
