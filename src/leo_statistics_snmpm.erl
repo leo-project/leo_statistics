@@ -18,6 +18,9 @@
 %% specific language governing permissions and limitations
 %% under the License.
 %%
+%% @doc The SNMP manager
+%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_statistics_snmpm.erl]
+%% @end
 %%======================================================================
 -module(leo_statistics_snmpm).
 -author('Yosuke Hara').
@@ -32,10 +35,10 @@
 %%--------------------------------------------------------------------
 %% API
 %%--------------------------------------------------------------------
-%% @doc Launch snmpm
+%% @doc Start the snmpm
 %%
--spec(start(atom()) ->
-             ok).
+-spec(start(Node) ->
+             ok when Node::atom()).
 start(Node) ->
     catch snmpm:start(),
     UserId = gen_user_id(Node),
@@ -49,8 +52,11 @@ start(Node) ->
 
 %% @doc Retrieve value from SNMPA
 %%
--spec(walk(atom(), string(), pos_integer(), list(integer())) ->
-             {ok, tuple()}).
+-spec(walk(Node, Address, Port, Oid) ->
+             {ok, #snmpa_value{}} when Node::atom(),
+                                       Address::string(),
+                                       Port::pos_integer(),
+                                       Oid::[non_neg_integer()]).
 walk(Node, Address, Port, Oid) ->
     UserId = gen_user_id(Node),
     Options = [{engine_id, atom_to_list(UserId)},

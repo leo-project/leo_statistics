@@ -18,6 +18,9 @@
 %% specific language governing permissions and limitations
 %% under the License.
 %%
+%% @doc The notifier of Erlang VM's metrics
+%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_statistics_sampler.erl]
+%% @end
 %%======================================================================
 -module(leo_metrics_vm_notifier).
 -author('Yosuke Hara').
@@ -36,9 +39,8 @@
 %% Callback
 %%--------------------------------------------------------------------
 %% @doc
-%% @doc
--spec(notify(#sv_result{}) ->
-             ok | {error, any()}).
+-spec(notify(Msg) ->
+             ok | {error, any()} when Msg::#sv_result{}).
 %% 1min
 notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_1MIN,
                   col_name = ?STAT_VM_TOTAL_MEM,

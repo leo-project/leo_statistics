@@ -20,7 +20,8 @@
 %%
 %% ---------------------------------------------------------------------
 %% Leo Statistics - API.
-%% @doc
+%% @doc The statistics API
+%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_statistics_api.erl]
 %% @end
 %%======================================================================
 -module(leo_statistics_api).
@@ -41,10 +42,10 @@
 %%--------------------------------------------------------------------
 %% API
 %%--------------------------------------------------------------------
-%% @doc Start SNMP server
+%% @doc Start the SNMP server
 %%
--spec(start_link(atom()) ->
-             ok | {error, any()}).
+-spec(start_link(Application) ->
+             ok | {error, any()} when Application::atom()).
 start_link(Application) ->
     case ?env_snmp_agent(Application) of
         [] ->
@@ -61,10 +62,11 @@ start_link(Application) ->
             end
     end.
 
-%% @doc Create stat's tables
+%% @doc Create the stat's tables
 %%
--spec(create_tables(disc_copies|ram_copies, list(atom())) ->
-             ok).
+-spec(create_tables(MnesiaDiscType, Nodes) ->
+             ok when MnesiaDiscType::disc_copies|ram_copies,
+                     Nodes::[atom()]).
 create_tables(MnesiaDiscType, Nodes) ->
     _ = mnesia:start(),
     _ = svc_tbl_schema:create_table(MnesiaDiscType, Nodes),

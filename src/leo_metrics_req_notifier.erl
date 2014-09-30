@@ -18,6 +18,9 @@
 %% specific language governing permissions and limitations
 %% under the License.
 %%
+%% @doc The notifier of request metrics
+%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_metrics_req_notifier.erl]
+%% @end
 %%======================================================================
 -module(leo_metrics_req_notifier).
 -author('Yosuke Hara').
@@ -35,9 +38,9 @@
 %%--------------------------------------------------------------------
 %% Callback
 %%--------------------------------------------------------------------
-%% @doc
--spec(notify(#sv_result{}) ->
-             ok | {error, any()}).
+%% @doc Notify the message
+-spec(notify(Msg) ->
+             ok | {error, any()} when Msg::#sv_result{}).
 %% 1min + count
 notify(#sv_result{metric_group_name = ?METRIC_GRP_REQ_1MIN,
                   col_name = ?STAT_COUNT_GET,

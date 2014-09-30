@@ -18,9 +18,8 @@
 %% specific language governing permissions and limitations
 %% under the License.
 %%
-%% ---------------------------------------------------------------------
-%% Leo Statistics - Client VM Metrics
-%% @doc
+%% @doc The metrics of Erlang VM's statistics
+%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_metrics_vm.erl]
 %% @end
 %%======================================================================
 -module(leo_metrics_vm).
@@ -40,17 +39,17 @@
 -export([handle_notify/0]).
 
 
--define(SCHEMA_NAME, 'vm_stats').
+-define(SCHEMA_NAME, << "vm_stats" >>).
 -define(NOTIFIER, 'leo_metrics_vm_notifier').
 
 
 %%--------------------------------------------------------------------
 %% API
 %%--------------------------------------------------------------------
-%% @doc Launch the metrics
+%% @doc Start the metrics
 %%
--spec(start_link(non_neg_integer()) ->
-             ok | {error, any()}).
+-spec(start_link(Window) ->
+             ok | {error, any()} when Window::non_neg_integer()).
 start_link(Window) ->
     case catch mnesia:table_info('sv_schemas', all) of
         {'EXIT', _Cause} ->
@@ -69,7 +68,7 @@ start_link_1(Window, Times) ->
     timer:sleep(250),
     NumOfSamples = 3000,
     try
-        ok = savanna_commons:create_schema(
+        savanna_commons:create_schema(
                ?SCHEMA_NAME, [#?SV_COLUMN{name = ?STAT_VM_TOTAL_MEM,
                                           type = ?COL_TYPE_H_UNIFORM,
                                           constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
@@ -88,10 +87,10 @@ start_link_1(Window, Times) ->
                              ]),
 
         %% generate metrics from the schema
-        ok = savanna_commons:create_metrics_by_schema(
-               ?SCHEMA_NAME, ?METRIC_GRP_VM_1MIN, ?SV_WINDOW_1M, ?SV_STEP_1M, ?NOTIFIER),
-        ok = savanna_commons:create_metrics_by_schema(
-               ?SCHEMA_NAME, ?METRIC_GRP_VM_5MIN, ?SV_WINDOW_5M, ?SV_STEP_5M, ?NOTIFIER),
+        savanna_commons:create_metrics_by_schema(
+          ?SCHEMA_NAME, ?METRIC_GRP_VM_1MIN, ?SV_WINDOW_1M, ?SV_STEP_1M, ?NOTIFIER),
+        savanna_commons:create_metrics_by_schema(
+          ?SCHEMA_NAME, ?METRIC_GRP_VM_5MIN, ?SV_WINDOW_5M, ?SV_STEP_5M, ?NOTIFIER),
         ok
     catch
         _:_ ->
