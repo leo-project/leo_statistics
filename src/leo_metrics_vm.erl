@@ -39,7 +39,7 @@
 -export([handle_notify/0]).
 
 
--define(SCHEMA_NAME, 'vm_stats').
+-define(SCHEMA_NAME, << "vm_stats" >>).
 -define(NOTIFIER, 'leo_metrics_vm_notifier').
 
 
@@ -68,7 +68,7 @@ start_link_1(Window, Times) ->
     timer:sleep(250),
     NumOfSamples = 3000,
     try
-        ok = savanna_commons:create_schema(
+        savanna_commons:create_schema(
                ?SCHEMA_NAME, [#?SV_COLUMN{name = ?STAT_VM_TOTAL_MEM,
                                           type = ?COL_TYPE_H_UNIFORM,
                                           constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
@@ -87,10 +87,10 @@ start_link_1(Window, Times) ->
                              ]),
 
         %% generate metrics from the schema
-        ok = savanna_commons:create_metrics_by_schema(
-               ?SCHEMA_NAME, ?METRIC_GRP_VM_1MIN, ?SV_WINDOW_1M, ?SV_STEP_1M, ?NOTIFIER),
-        ok = savanna_commons:create_metrics_by_schema(
-               ?SCHEMA_NAME, ?METRIC_GRP_VM_5MIN, ?SV_WINDOW_5M, ?SV_STEP_5M, ?NOTIFIER),
+        savanna_commons:create_metrics_by_schema(
+          ?SCHEMA_NAME, ?METRIC_GRP_VM_1MIN, ?SV_WINDOW_1M, ?SV_STEP_1M, ?NOTIFIER),
+        savanna_commons:create_metrics_by_schema(
+          ?SCHEMA_NAME, ?METRIC_GRP_VM_5MIN, ?SV_WINDOW_5M, ?SV_STEP_5M, ?NOTIFIER),
         ok
     catch
         _:_ ->

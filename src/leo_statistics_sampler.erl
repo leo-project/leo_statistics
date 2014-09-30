@@ -66,8 +66,6 @@ stop(Pid) ->
 %% GEN_SERVER CALLBACKS
 %%--------------------------------------------------------------------
 %% @doc Initiates the server
--spec(init(Args) ->
-             {ok, #state{}} when Args::[any()]).
 init([Mod, Timeout]) ->
     {ok, #state{mod = Mod,
                 timeout = Timeout}, Timeout}.
