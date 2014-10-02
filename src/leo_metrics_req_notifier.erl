@@ -19,7 +19,7 @@
 %% under the License.
 %%
 %% @doc The notifier of request metrics
-%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_metrics_req_notifier.erl]
+%% @reference https://github.com/leo-project/leo_statistics/blob/master/src/leo_metrics_req_notifier.erl
 %% @end
 %%======================================================================
 -module(leo_metrics_req_notifier).

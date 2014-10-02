@@ -19,7 +19,7 @@
 %% under the License.
 %%
 %% @doc The statistics data sampler
-%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_statistics_sampler.erl]
+%% @reference https://github.com/leo-project/leo_statistics/blob/master/src/leo_statistics_sampler.erl
 %% @end
 %%======================================================================
 -module(leo_statistics_sampler).

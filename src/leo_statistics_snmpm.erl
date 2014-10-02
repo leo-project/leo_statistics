@@ -19,7 +19,7 @@
 %% under the License.
 %%
 %% @doc The SNMP manager
-%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_statistics_snmpm.erl]
+%% @reference https://github.com/leo-project/leo_statistics/blob/master/src/leo_statistics_snmpm.erl
 %% @end
 %%======================================================================
 -module(leo_statistics_snmpm).
