@@ -19,7 +19,7 @@
 %% under the License.
 %%
 %% @doc The statistics data sampler
-%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_statistics_sampler.erl]
+%% @reference https://github.com/leo-project/leo_statistics/blob/master/src/leo_statistics_sampler.erl
 %% @end
 %%======================================================================
 -module(leo_statistics_sampler).
@@ -93,7 +93,11 @@ handle_info(timeout, State=#state{mod = Mod,
                                   timeout = Timeout}) ->
     timer:sleep(erlang:phash2(leo_date:clock(), 250)),
     catch Mod:handle_notify(),
+    {noreply, State, Timeout};
+
+handle_info(_, State=#state{timeout = Timeout}) ->
     {noreply, State, Timeout}.
+
 
 %% @doc This function is called by a gen_server when it is about to
 %%      terminate. It should be the opposite of Module:init/1 and do any necessary

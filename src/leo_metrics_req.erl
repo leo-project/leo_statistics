@@ -19,7 +19,7 @@
 %% under the License.
 %%
 %% @doc The metrics of request
-%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_metrics_req.erl]
+%% @reference https://github.com/leo-project/leo_statistics/blob/master/src/leo_metrics_req.erl
 %% @end
 %%======================================================================
 -module(leo_metrics_req).

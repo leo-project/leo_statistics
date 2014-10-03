@@ -21,7 +21,7 @@
 %% ---------------------------------------------------------------------
 %% Leo Statistics - API.
 %% @doc The statistics API
-%% @reference [https://github.com/leo-project/leo_statistics/blob/master/src/leo_statistics_api.erl]
+%% @reference https://github.com/leo-project/leo_statistics/blob/master/src/leo_statistics_api.erl
 %% @end
 %%======================================================================
 -module(leo_statistics_api).
