@@ -51,12 +51,25 @@ start_link(Application) ->
         [] ->
             ok;
         SNMPAgent ->
-            ok = application:start(leo_statistics),
-            ok = application:start(snmp),
+            Ret = case application:start(leo_statistics) of
+                      ok ->
+                          ok;
+                      {error,{already_started,leo_statistics}} ->
+                          ok;
+                      {error, Cause} ->
+                          {error, Cause}
+                  end,
 
-            case catch snmpa:load_mibs(snmp_master_agent, [SNMPAgent]) of
+            case Ret of
                 ok ->
-                    ok;
+                    _ = application:start(snmp),
+                    case catch snmpa:load_mibs(snmp_master_agent, [SNMPAgent]) of
+                        ok ->
+                            ok;
+                        Error ->
+                            ?debugVal(Error),
+                            Error
+                    end;
                 Error ->
                     Error
             end
