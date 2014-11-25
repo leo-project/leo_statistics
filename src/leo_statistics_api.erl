@@ -67,7 +67,6 @@ start_link(Application) ->
                         ok ->
                             ok;
                         Error ->
-                            ?debugVal(Error),
                             Error
                     end;
                 Error ->
