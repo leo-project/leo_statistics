@@ -67,6 +67,16 @@ notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_1MIN,
                   result = {_, Stats}}) ->
     set_variable(?SNMP_VM_PROC_COUNT_1M, Stats);
 
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_1MIN,
+                  col_name = ?STAT_VM_USED_PER_ALLOC_MEM,
+                  result = {_, Stats}}) ->
+    set_variable(?SNMP_VM_USED_PER_ALLOC_MEM_1M, Stats);
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_1MIN,
+                  col_name = ?STAT_VM_ALLOC_MEM,
+                  result = {_, Stats}}) ->
+    set_variable(?SNMP_VM_ALLOC_MEM_1M, Stats);
+
 %% 5min
 notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_5MIN,
                   col_name = ?STAT_VM_TOTAL_MEM,
@@ -92,6 +102,16 @@ notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_5MIN,
                   col_name = ?STAT_VM_PROC_COUNT,
                   result = {_, Stats}}) ->
     set_variable(?SNMP_VM_PROC_COUNT_5M, Stats);
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_5MIN,
+                  col_name = ?STAT_VM_USED_PER_ALLOC_MEM,
+                  result = {_, Stats}}) ->
+    set_variable(?SNMP_VM_USED_PER_ALLOC_MEM_5M, Stats);
+
+notify(#sv_result{metric_group_name = ?METRIC_GRP_VM_5MIN,
+                  col_name = ?STAT_VM_ALLOC_MEM,
+                  result = {_, Stats}}) ->
+    set_variable(?SNMP_VM_ALLOC_MEM_5M, Stats);
 
 notify(_) ->
     ok.

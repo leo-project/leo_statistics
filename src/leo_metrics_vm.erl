@@ -83,6 +83,12 @@ start_link_1(Window, Times) ->
                                           constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
                               #?SV_COLUMN{name = ?STAT_VM_PROC_COUNT,
                                           type = ?COL_TYPE_H_UNIFORM,
+                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                              #?SV_COLUMN{name = ?STAT_VM_USED_PER_ALLOC_MEM,
+                                          type = ?COL_TYPE_H_UNIFORM,
+                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                              #?SV_COLUMN{name = ?STAT_VM_ALLOC_MEM,
+                                          type = ?COL_TYPE_H_UNIFORM,
                                           constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
                              ]),
 
@@ -109,18 +115,24 @@ handle_notify() ->
     SysMem   = erlang:memory(system),
     EtsMem   = erlang:memory(ets),
     Procs    = erlang:system_info(process_count),
+    UsedPerAllocMem = round(recon_alloc:memory(usage) * 100),
+    AllocatedMem    = recon_alloc:memory(allocated),
 
     savanna_commons:notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_TOTAL_MEM,  TotalMem}),
     savanna_commons:notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_PROCS_MEM,  ProcMem}),
     savanna_commons:notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_SYSTEM_MEM, SysMem}),
     savanna_commons:notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_ETS_MEM,    EtsMem}),
     savanna_commons:notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_PROC_COUNT, Procs}),
+    savanna_commons:notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_USED_PER_ALLOC_MEM, UsedPerAllocMem}),
+    savanna_commons:notify(?METRIC_GRP_VM_1MIN, {?STAT_VM_ALLOC_MEM,  AllocatedMem}),
 
     savanna_commons:notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_TOTAL_MEM,  TotalMem}),
     savanna_commons:notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_PROCS_MEM,  ProcMem}),
     savanna_commons:notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_SYSTEM_MEM, SysMem}),
     savanna_commons:notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_ETS_MEM,    EtsMem}),
     savanna_commons:notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_PROC_COUNT, Procs}),
+    savanna_commons:notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_USED_PER_ALLOC_MEM, UsedPerAllocMem}),
+    savanna_commons:notify(?METRIC_GRP_VM_5MIN, {?STAT_VM_ALLOC_MEM,  AllocatedMem}),
 
     snmp_generic:variable_set(?SNMP_NODE_NAME, atom_to_list(erlang:node())),
     ok.
