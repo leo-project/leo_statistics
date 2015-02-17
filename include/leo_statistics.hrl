@@ -110,18 +110,24 @@
 -define(STAT_VM_SYSTEM_MEM, << "vm-system-mem" >>).
 -define(STAT_VM_ETS_MEM,    << "vm-ets-mem" >>).
 -define(STAT_VM_PROC_COUNT, << "vm-proc-count" >>).
+-define(STAT_VM_USED_PER_ALLOC_MEM, <<"vm-used-per-allocated-mem">>).
+-define(STAT_VM_ALLOC_MEM,          <<"vm-allocated-mem">>).
 
 -define(SNMP_VM_TOTAL_MEM_1M,  'vm-total-mem-1m').
 -define(SNMP_VM_PROCS_MEM_1M,  'vm-procs-mem-1m').
 -define(SNMP_VM_SYSTEM_MEM_1M, 'vm-system-mem-1m').
 -define(SNMP_VM_ETS_MEM_1M,    'vm-ets-mem-1m').
 -define(SNMP_VM_PROC_COUNT_1M, 'vm-proc-count-1m').
+-define(SNMP_VM_USED_PER_ALLOC_MEM_1M, 'vm-used-per-allocated-mem-1m').
+-define(SNMP_VM_ALLOC_MEM_1M,  'vm-allocated-mem-1m').
 
 -define(SNMP_VM_TOTAL_MEM_5M,  'vm-total-mem-5m').
 -define(SNMP_VM_PROCS_MEM_5M,  'vm-procs-mem-5m').
 -define(SNMP_VM_SYSTEM_MEM_5M, 'vm-system-mem-5m').
 -define(SNMP_VM_ETS_MEM_5M,    'vm-ets-mem-5m').
 -define(SNMP_VM_PROC_COUNT_5M, 'vm-proc-count-5m').
+-define(SNMP_VM_USED_PER_ALLOC_MEM_5M, 'vm-used-per-allocated-mem-5m').
+-define(SNMP_VM_ALLOC_MEM_5M,  'vm-allocated-mem-5m').
 
 
 -define(STAT_ELEMENT_MEAN,   'arithmetic_mean').
