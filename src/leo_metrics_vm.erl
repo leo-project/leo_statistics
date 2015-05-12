@@ -2,7 +2,7 @@
 %%
 %% Leo Statistics
 %%
-%% Copyright (c) 2012-2014 Rakuten, Inc.
+%% Copyright (c) 2012-2015 Rakuten, Inc.
 %%
 %% This file is provided to you under the Apache License,
 %% Version 2.0 (the "License"); you may not use this file
@@ -32,8 +32,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 %% api
--export([start_link/1
-        ]).
+-export([start_link/1, start_link/2]).
 
 %% callback
 -export([handle_notify/0]).
@@ -51,13 +50,27 @@
 -spec(start_link(Window) ->
              ok | {error, any()} when Window::non_neg_integer()).
 start_link(Window) ->
-    case catch mnesia:table_info('sv_schemas', all) of
-        {'EXIT', _Cause} ->
-            timer:apply_after(500, ?MODULE, start_link, [Window]),
-            ok;
-        _ ->
-            ok = leo_statistics_sup:start_child(?MODULE, Window),
-            start_link_1(Window, 0)
+    start_link(Window, false).
+
+-spec(start_link(Window, IsOnlyStartChild) ->
+             ok | {error, any()} when Window::non_neg_integer(),
+                                      IsOnlyStartChild::boolean()).
+start_link(Window, IsOnlyStartChild) ->
+    case IsOnlyStartChild of
+        true ->
+            leo_statistics_sup:start_child(?MODULE, Window);
+        false ->
+            case catch mnesia:table_info('sv_schemas', all) of
+                {'EXIT', Cause} ->
+                    error_logger:error_msg("~p,~p,~p,~p~n",
+                                           [{module, ?MODULE_STRING},
+                                            {function, "start_link/1"},
+                                            {line, ?LINE}, {body, Cause}]),
+                    {error, Cause};
+                _Ret ->
+                    ok = leo_statistics_sup:start_child(?MODULE, Window),
+                    start_link_1(Window, 0)
+            end
     end.
 
 
@@ -69,28 +82,28 @@ start_link_1(Window, Times) ->
     NumOfSamples = 3000,
     try
         savanna_commons:create_schema(
-               ?SCHEMA_NAME, [#?SV_COLUMN{name = ?STAT_VM_TOTAL_MEM,
-                                          type = ?COL_TYPE_H_UNIFORM,
-                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                              #?SV_COLUMN{name = ?STAT_VM_PROCS_MEM,
-                                          type = ?COL_TYPE_H_UNIFORM,
-                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                              #?SV_COLUMN{name = ?STAT_VM_SYSTEM_MEM,
-                                          type = ?COL_TYPE_H_UNIFORM,
-                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                              #?SV_COLUMN{name = ?STAT_VM_ETS_MEM,
-                                          type = ?COL_TYPE_H_UNIFORM,
-                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                              #?SV_COLUMN{name = ?STAT_VM_PROC_COUNT,
-                                          type = ?COL_TYPE_H_UNIFORM,
-                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                              #?SV_COLUMN{name = ?STAT_VM_USED_PER_ALLOC_MEM,
-                                          type = ?COL_TYPE_H_UNIFORM,
-                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                              #?SV_COLUMN{name = ?STAT_VM_ALLOC_MEM,
-                                          type = ?COL_TYPE_H_UNIFORM,
-                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
-                             ]),
+          ?SCHEMA_NAME, [#?SV_COLUMN{name = ?STAT_VM_TOTAL_MEM,
+                                     type = ?COL_TYPE_H_UNIFORM,
+                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                         #?SV_COLUMN{name = ?STAT_VM_PROCS_MEM,
+                                     type = ?COL_TYPE_H_UNIFORM,
+                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                         #?SV_COLUMN{name = ?STAT_VM_SYSTEM_MEM,
+                                     type = ?COL_TYPE_H_UNIFORM,
+                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                         #?SV_COLUMN{name = ?STAT_VM_ETS_MEM,
+                                     type = ?COL_TYPE_H_UNIFORM,
+                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                         #?SV_COLUMN{name = ?STAT_VM_PROC_COUNT,
+                                     type = ?COL_TYPE_H_UNIFORM,
+                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                         #?SV_COLUMN{name = ?STAT_VM_USED_PER_ALLOC_MEM,
+                                     type = ?COL_TYPE_H_UNIFORM,
+                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                         #?SV_COLUMN{name = ?STAT_VM_ALLOC_MEM,
+                                     type = ?COL_TYPE_H_UNIFORM,
+                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
+                        ]),
 
         %% generate metrics from the schema
         savanna_commons:create_metrics_by_schema(
@@ -99,7 +112,11 @@ start_link_1(Window, Times) ->
           ?SCHEMA_NAME, ?METRIC_GRP_VM_5MIN, ?SV_WINDOW_5M, ?SV_STEP_5M, ?NOTIFIER),
         ok
     catch
-        _:_ ->
+        _:Cause ->
+            error_logger:error_msg("~p,~p,~p,~p~n",
+                                   [{module, ?MODULE_STRING},
+                                    {function, "start_link_1/2"},
+                                    {line, ?LINE}, {body, Cause}]),
             start_link_1(Window, Times + 1)
     end.
 
