@@ -2,7 +2,7 @@
 %%
 %% Leo Statistics
 %%
-%% Copyright (c) 2012-2014 Rakuten, Inc.
+%% Copyright (c) 2012-2015 Rakuten, Inc.
 %%
 %% This file is provided to you under the Apache License,
 %% Version 2.0 (the "License"); you may not use this file
@@ -32,7 +32,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 %% api
--export([start_link/1,
+-export([start_link/1, start_link/2,
          notify/1, notify/2
         ]).
 
@@ -51,13 +51,27 @@
 -spec(start_link(Window) ->
              ok | {error, any()} when Window::non_neg_integer()).
 start_link(Window) ->
-    case catch mnesia:table_info('sv_schemas', all) of
-        {'EXIT', _Cause} ->
-            timer:apply_after(500, ?MODULE, start_link, [Window]),
-            ok;
-        _ ->
-            ok = leo_statistics_sup:start_child(?MODULE, Window),
-            start_link_1(Window, 0)
+    start_link(Window, false).
+
+-spec(start_link(Window, IsOnlyStartChild) ->
+             ok | {error, any()} when Window::non_neg_integer(),
+                                      IsOnlyStartChild::boolean()).
+start_link(Window, IsOnlyStartChild) ->
+    case IsOnlyStartChild of
+        true ->
+            leo_statistics_sup:start_child(?MODULE, Window);
+        false ->
+            case catch mnesia:table_info('sv_schemas', all) of
+                {'EXIT', Cause} ->
+                    error_logger:error_msg("~p,~p,~p,~p~n",
+                                           [{module, ?MODULE_STRING},
+                                            {function, "start_link/1"},
+                                            {line, ?LINE}, {body, Cause}]),
+                    {error, Cause};
+                _Ret ->
+                    ok = leo_statistics_sup:start_child(?MODULE, Window),
+                    start_link_1(Window, 0)
+            end
     end.
 
 
