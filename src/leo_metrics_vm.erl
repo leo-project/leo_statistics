@@ -78,7 +78,7 @@ start_link(Window, IsOnlyStartChild) ->
 start_link_1(_, ?MAX_RETRY_TIMES) ->
     {error, "Could not create the schemas"};
 start_link_1(Window, Times) ->
-    timer:sleep(250),
+    timer:sleep(timer:seconds(1)),
     NumOfSamples = 3000,
     try
         ok = savanna_commons:create_schema(
