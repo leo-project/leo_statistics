@@ -81,35 +81,35 @@ start_link_1(Window, Times) ->
     timer:sleep(250),
     NumOfSamples = 3000,
     try
-        savanna_commons:create_schema(
-          ?SCHEMA_NAME, [#?SV_COLUMN{name = ?STAT_VM_TOTAL_MEM,
-                                     type = ?COL_TYPE_H_UNIFORM,
-                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                         #?SV_COLUMN{name = ?STAT_VM_PROCS_MEM,
-                                     type = ?COL_TYPE_H_UNIFORM,
-                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                         #?SV_COLUMN{name = ?STAT_VM_SYSTEM_MEM,
-                                     type = ?COL_TYPE_H_UNIFORM,
-                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                         #?SV_COLUMN{name = ?STAT_VM_ETS_MEM,
-                                     type = ?COL_TYPE_H_UNIFORM,
-                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                         #?SV_COLUMN{name = ?STAT_VM_PROC_COUNT,
-                                     type = ?COL_TYPE_H_UNIFORM,
-                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                         #?SV_COLUMN{name = ?STAT_VM_USED_PER_ALLOC_MEM,
-                                     type = ?COL_TYPE_H_UNIFORM,
-                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
-                         #?SV_COLUMN{name = ?STAT_VM_ALLOC_MEM,
-                                     type = ?COL_TYPE_H_UNIFORM,
-                                     constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
-                        ]),
+        ok = savanna_commons:create_schema(
+               ?SCHEMA_NAME, [#?SV_COLUMN{name = ?STAT_VM_TOTAL_MEM,
+                                          type = ?COL_TYPE_H_UNIFORM,
+                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                              #?SV_COLUMN{name = ?STAT_VM_PROCS_MEM,
+                                          type = ?COL_TYPE_H_UNIFORM,
+                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                              #?SV_COLUMN{name = ?STAT_VM_SYSTEM_MEM,
+                                          type = ?COL_TYPE_H_UNIFORM,
+                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                              #?SV_COLUMN{name = ?STAT_VM_ETS_MEM,
+                                          type = ?COL_TYPE_H_UNIFORM,
+                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                              #?SV_COLUMN{name = ?STAT_VM_PROC_COUNT,
+                                          type = ?COL_TYPE_H_UNIFORM,
+                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                              #?SV_COLUMN{name = ?STAT_VM_USED_PER_ALLOC_MEM,
+                                          type = ?COL_TYPE_H_UNIFORM,
+                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]},
+                              #?SV_COLUMN{name = ?STAT_VM_ALLOC_MEM,
+                                          type = ?COL_TYPE_H_UNIFORM,
+                                          constraint = [{?HISTOGRAM_CONS_SAMPLE, NumOfSamples}]}
+                             ]),
 
         %% generate metrics from the schema
-        savanna_commons:create_metrics_by_schema(
-          ?SCHEMA_NAME, ?METRIC_GRP_VM_1MIN, ?SV_WINDOW_1M, ?SV_STEP_1M, ?NOTIFIER),
-        savanna_commons:create_metrics_by_schema(
-          ?SCHEMA_NAME, ?METRIC_GRP_VM_5MIN, ?SV_WINDOW_5M, ?SV_STEP_5M, ?NOTIFIER),
+        ok = savanna_commons:create_metrics_by_schema(
+               ?SCHEMA_NAME, ?METRIC_GRP_VM_1MIN, ?SV_WINDOW_1M, ?SV_STEP_1M, ?NOTIFIER),
+        ok = savanna_commons:create_metrics_by_schema(
+               ?SCHEMA_NAME, ?METRIC_GRP_VM_5MIN, ?SV_WINDOW_5M, ?SV_STEP_5M, ?NOTIFIER),
         ok
     catch
         _:Cause ->
