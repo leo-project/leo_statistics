@@ -80,8 +80,28 @@ start_link(Application) ->
              ok when MnesiaDiscType::disc_copies|ram_copies,
                      Nodes::[atom()]).
 create_tables(MnesiaDiscType, Nodes) ->
-    _ = mnesia:start(),
-    _ = svc_tbl_schema:create_table(MnesiaDiscType, Nodes),
-    _ = svc_tbl_column:create_table(MnesiaDiscType, Nodes),
-    _ = svc_tbl_metric_group:create_table(MnesiaDiscType, Nodes),
-    ok.
+    case whereis(mnesia_sup) of
+        undefined ->
+            ok = mnesia:start();
+        _ ->
+            void
+    end,
+    create_tables(MnesiaDiscType, Nodes, 0).
+
+%% @private
+-define(RETRY_TIMES, 5).
+
+%% @private
+create_tables(_MnesiaDiscType,_Nodes, ?RETRY_TIMES) ->
+    {error, "Could not create leo_statistics's tables"};
+create_tables(MnesiaDiscType, Nodes, RetryTimes) ->
+    timer:sleep(timer:seconds(1)),
+    try
+        ok = svc_tbl_schema:create_table(MnesiaDiscType, Nodes),
+        ok = svc_tbl_column:create_table(MnesiaDiscType, Nodes),
+        ok = svc_tbl_metric_group:create_table(MnesiaDiscType, Nodes),
+        ok
+    catch
+        _:_ ->
+            create_tables(MnesiaDiscType, Nodes, RetryTimes + 1)
+    end.
