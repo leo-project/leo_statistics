@@ -79,8 +79,7 @@ start_link(Window, IsOnlyStartChild) ->
 start_link_1(_, ?MAX_RETRY_TIMES) ->
     {error, "Could not create the schemas"};
 start_link_1(Window, Times) ->
-    timer:sleep(250),
-    _NumOfSamples = 3000,
+    timer:sleep(timer:seconds(1)),
     try
         ok = savanna_commons:create_schema(
                ?SCHEMA_NAME, [
@@ -119,10 +118,10 @@ start_link_1(Window, Times) ->
                              ]),
 
         %% generate metrics from the schema
-        savanna_commons:create_metrics_by_schema(
-          ?SCHEMA_NAME, ?METRIC_GRP_REQ_1MIN, ?SV_WINDOW_1M, ?SV_STEP_1M, ?NOTIFIER),
-        savanna_commons:create_metrics_by_schema(
-          ?SCHEMA_NAME, ?METRIC_GRP_REQ_5MIN, ?SV_WINDOW_5M, ?SV_STEP_5M, ?NOTIFIER),
+        ok = savanna_commons:create_metrics_by_schema(
+               ?SCHEMA_NAME, ?METRIC_GRP_REQ_1MIN, ?SV_WINDOW_1M, ?SV_STEP_1M, ?NOTIFIER),
+        ok = savanna_commons:create_metrics_by_schema(
+               ?SCHEMA_NAME, ?METRIC_GRP_REQ_5MIN, ?SV_WINDOW_5M, ?SV_STEP_5M, ?NOTIFIER),
         ok
     catch
         _:_ ->
