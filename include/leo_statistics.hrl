@@ -135,6 +135,7 @@
 -define(STAT_ELEMENT_MAX,    'max').
 -define(STAT_ELEMENT_MIN,    'min').
 
+-undef(MAX_RETRY_TIMES).
 -define(MAX_RETRY_TIMES, 3).
 
 %% @doc SNMPA Value
