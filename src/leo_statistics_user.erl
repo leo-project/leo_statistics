@@ -2,7 +2,7 @@
 %%
 %% Leo Statistics
 %%
-%% Copyright (c) 2012-2016 Rakuten, Inc.
+%% Copyright (c) 2012-2017 Rakuten, Inc.
 %%
 %% This file is provided to you under the Apache License,
 %% Version 2.0 (the "License"); you may not use this file
@@ -63,4 +63,3 @@ handle_report(TargetName, SnmpReportInfo, UserData) ->
     error_logger:error_msg("Handle error - target-name:~p, snmp-report-info:~p, user-data:~p",
                            [TargetName, SnmpReportInfo, UserData]),
     ignore.
-
