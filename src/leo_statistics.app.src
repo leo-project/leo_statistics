@@ -23,7 +23,7 @@
 {application, leo_statistics,
  [
   {description, "Leo Statistics lib for Erlang"},
-  {vsn, "1.1.18"},
+  {vsn, "1.1.19"},
   {id, "leo_statistics"},
   {registered,   []},
   {applications, [kernel, stdlib]},
