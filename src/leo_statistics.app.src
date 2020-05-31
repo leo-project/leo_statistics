@@ -4,6 +4,7 @@
 %% Leo Statostics
 %%
 %% Copyright (c) 2012-2018 Rakuten, Inc.
+%% Copyright (c) 2019-2020 Lions Data, Ltd.
 %%
 %% This file is provided to you under the Apache License,
 %% Version 2.0 (the "License"); you may not use this file
@@ -23,7 +24,7 @@
 {application, leo_statistics,
  [
   {description, "Leo Statistics lib for Erlang"},
-  {vsn, "1.1.23"},
+  {vsn, "1.1.24"},
   {id, "leo_statistics"},
   {registered,   []},
   {applications, [kernel, stdlib]},
