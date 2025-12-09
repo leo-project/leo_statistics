@@ -66,8 +66,8 @@ walk(Node, Address, Port, Oid) ->
                {version, v2}],
 
     snmpm:register_agent(UserId, atom_to_list(UserId), Options),
-    case snmpm:sync_get(UserId, atom_to_list(UserId), [Oid]) of
-        {ok,  {_, _, Result}, _Rest} ->
+    case snmpm:sync_get2(UserId, atom_to_list(UserId), [Oid]) of
+        {ok, {_, _, Result}, _Remaining} ->
             [{_, Oid, Type, Value, _}] = Result,
             {ok, #snmpa_value{oid   = Oid,
                               type  = Type,

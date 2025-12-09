@@ -1,43 +1,32 @@
-.PHONY: deps test
+.PHONY: all compile deps test eunit xref dialyzer doc clean distclean
 
-REBAR := ./rebar
-APPS = erts kernel stdlib sasl crypto compiler inets mnesia public_key runtime_tools snmp syntax_tools tools xmerl webtool ssl
-LIBS = deps/leo_commons/ebin deps/leo_rpc/ebin deps/leo_pod/ebin deps/savanna_commons/ebin deps/folsom/ebin deps/bear/ebin
-PLT_FILE = .leo_statistics_dialyzer_plt
-DOT_FILE = leo_statistics.dot
-CALL_GRAPH_FILE = leo_statistics.png
+REBAR := rebar3
 
-all:
-	@$(REBAR) update-deps
-	@$(REBAR) get-deps
-	@$(REBAR) compile
-	@$(REBAR) xref skip_deps=true
-	@$(REBAR) eunit skip_deps=true
+all: compile xref eunit
+
 compile:
-	@$(REBAR) compile skip_deps=true
+	@$(REBAR) compile
+
+deps:
+	@$(REBAR) deps
+
 xref:
-	@$(REBAR) xref skip_deps=true
+	@$(REBAR) xref
+
 eunit:
-	@$(REBAR) eunit skip_deps=true
-check_plt:
-	@$(REBAR) compile
-	dialyzer --check_plt --plt $(PLT_FILE) --apps $(APPS)
-build_plt:
-	@$(REBAR) compile
-	dialyzer --build_plt --output_plt $(PLT_FILE) --apps $(APPS) $(LIBS)
+	@$(REBAR) eunit
+
+test: eunit
+
 dialyzer:
-	@$(REBAR) compile
-	dialyzer -Wno_return --plt $(PLT_FILE) -r ebin/ --dump_callgraph $(DOT_FILE) -Wrace_conditions
-typer:
-	typer --plt $(PLT_FILE) -I include/ -r src/
-doc: compile
-	@$(REBAR) doc
-callgraph: graphviz
-	dot -Tpng -o$(CALL_GRAPH_FILE) $(DOT_FILE)
-graphviz:
-	$(if $(shell which dot),,$(error "To make the depgraph, you need graphviz installed"))
+	@$(REBAR) dialyzer
+
+doc:
+	@$(REBAR) edoc
+
 clean:
-	@$(REBAR) clean skip_deps=true
-distclean:
-	@$(REBAR) delete-deps
 	@$(REBAR) clean
+
+distclean:
+	@$(REBAR) clean -a
+	@rm -rf _build

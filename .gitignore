@@ -9,3 +9,4 @@ leo_statistics.dot
 leo_statistics.png
 .rebar/
 doc/
+_build/
